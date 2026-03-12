@@ -1,0 +1,9 @@
+Analyzing home_library...                                       
+
+   info - Parameter 'spacingBelow' could be a super parameter - lib\src\models\section_config.dart:17:9 - use_super_parameters
+   info - Parameter 'spacingBelow' could be a super parameter - lib\src\models\section_config.dart:47:9 - use_super_parameters
+   info - Parameter 'spacingBelow' could be a super parameter - lib\src\models\section_config.dart:68:9 - use_super_parameters
+   info - Parameter 'spacingBelow' could be a super parameter - lib\src\models\section_config.dart:96:9 - use_super_parameters
+   info - Parameter 'spacingBelow' could be a super parameter - lib\src\models\section_config.dart:115:9 - use_super_parameters
+   info - Parameter 'spacingBelow' could be a super parameter - lib\src\models\section_config.dart:134:9 - use_super_parameters
+
