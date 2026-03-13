@@ -1,3 +1,13 @@
+## 0.0.3
+
+* Renamed `docs` directory to `doc` to comply with pub.dev package layout conventions.
+
+## 0.0.2
+
+* Added fine-grained control for section spacing.
+* Exported package APIs correctly for better integration.
+* Improved package metadata and resolved static analysis warnings.
+
 ## 0.0.1
 
 * Initial release of the Modular Home Screen library.
