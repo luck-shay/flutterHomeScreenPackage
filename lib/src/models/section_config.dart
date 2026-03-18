@@ -14,10 +14,7 @@ class CustomSectionConfig extends HomeSectionConfig {
   /// Builder to render the custom widget.
   final WidgetBuilder builder;
 
-  const CustomSectionConfig({
-    required this.builder,
-    super.spacingBelow,
-  });
+  const CustomSectionConfig({required this.builder, super.spacingBelow});
 }
 
 /// Defines the layout type for content lists.

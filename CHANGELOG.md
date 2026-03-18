@@ -1,3 +1,9 @@
+## 0.1.0
+
+* **Major Feature:** Added 3 production-ready Prebuilt Layout Templates (`EcommerceTemplate`, `DashboardTemplate`, `SocialFeedTemplate`).
+* Completely overhauled the `example` application into a production-grade multi-tab layout.
+* Rewrote package documentation and `README.md` to be highly comprehensive with visual demos.
+
 ## 0.0.3
 
 * Renamed `docs` directory to `doc` to comply with pub.dev package layout conventions.

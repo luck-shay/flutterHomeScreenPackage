@@ -17,185 +17,106 @@ class ExampleApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeDashboard(),
+      home: const MainAppTabs(),
     );
   }
 }
 
-class HomeDashboard extends StatelessWidget {
-  const HomeDashboard({super.key});
+class MainAppTabs extends StatefulWidget {
+  const MainAppTabs({super.key});
+
+  @override
+  State<MainAppTabs> createState() => _MainAppTabsState();
+}
+
+class _MainAppTabsState extends State<MainAppTabs> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const EcommerceSection(),
+    const DashboardSection(),
+    const SocialFeedSection(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // 1. Define the Home Theme Customizations (Optional)
-    final themeDelegate = HomeThemeDelegate(
-      screenPadding: const EdgeInsets.symmetric(
-        horizontal: 20.0,
-        vertical: 16.0,
-      ),
-      sectionSpacing: 32.0,
-      cardBorderRadius: BorderRadius.circular(24.0),
-      sectionHeaderTextStyle: Theme.of(context).textTheme.headlineSmall
-          ?.copyWith(
-            fontWeight: FontWeight.w900,
-            color: Colors.deepPurple.shade900,
+    return Scaffold(
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Store'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.analytics),
+            label: 'Dashboard',
           ),
-    );
-
-    // 2. Build the Layout Configuration
-    final config = HomeConfig(
-      appBar: AppBar(
-        title: const Text('My Dashboard'),
-        backgroundColor: Colors.deepPurple.shade50,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {},
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.feed), label: 'Feed'),
         ],
       ),
-      backgroundColor: Colors.white,
-      sections: [
-        // A. Header Section
-        HeaderSectionConfig(
-          title: 'Good Morning, Jane!',
-          subtitle: 'Here is your daily overview.',
-          trailingWidget: const CircleAvatar(
-            backgroundColor: Colors.deepPurple,
-            child: Text('J', style: TextStyle(color: Colors.white)),
-          ),
-        ),
+    );
+  }
+}
 
-        // B. Active Promo / Carousel Banner
-        BannerSectionConfig(
-          layoutType: BannerLayoutType.carousel,
-          banners: [
-            _buildPromoCard(
-              'Summer Sale!',
-              'Up to 50% off everything.',
-              Colors.orange.shade300,
-            ),
-            _buildPromoCard(
-              'New Arrivals',
-              'Check out the new collection.',
-              Colors.blue.shade300,
-            ),
-            _buildPromoCard(
-              'Free Shipping',
-              'On all orders over \$50.',
-              Colors.green.shade300,
-            ),
-          ],
-        ),
+// -----------------------------------------------------
+// 1. E-Commerce Template Showcase
+// -----------------------------------------------------
+class EcommerceSection extends StatelessWidget {
+  const EcommerceSection({super.key});
 
-        // C. Quick Actions Grid
-        ActionGridSectionConfig(
-          crossAxisCount: 4,
-          spacing: 12.0,
-          actions: [
-            _buildActionItem(
-              Icons.account_balance_wallet,
-              'Wallet',
-              Colors.blue,
-            ),
-            _buildActionItem(Icons.shopping_bag, 'Orders', Colors.orange),
-            _buildActionItem(Icons.favorite, 'Wishlist', Colors.pink),
-            _buildActionItem(Icons.local_offer, 'Promos', Colors.purple),
-            _buildActionItem(Icons.support_agent, 'Support', Colors.teal),
-            _buildActionItem(Icons.settings, 'Settings', Colors.grey),
-            _buildActionItem(Icons.share, 'Refer', Colors.indigo),
-            _buildActionItem(Icons.more_horiz, 'More', Colors.brown),
-          ],
-        ),
-
-        // D. Visual Divider
-        const DividerSectionConfig(
-          height: 48,
-          thickness: 1,
-          color: Colors.black12,
-        ),
-
-        // E. Custom Injected Section
-        CustomSectionConfig(
-          builder: (context) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple.shade50,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.deepPurple.shade100),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.stars, color: Colors.deepPurple),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text('Custom Section: You have 350 reward points!'),
-                  ),
-                  Icon(Icons.arrow_forward_ios, size: 16),
-                ],
-              ),
-            );
-          },
-        ),
-
-        // F. Horizontal List (e.g. Recommended Products)
+  @override
+  Widget build(BuildContext context) {
+    return EcommerceTemplate(
+      title: 'Fashion Store',
+      greetingTitle: 'Good Morning, Jane!',
+      greetingSubtitle: 'Discover the latest trends.',
+      appBarActions: [
+        IconButton(icon: const Icon(Icons.shopping_cart), onPressed: () {}),
+      ],
+      promoBanners: [
+        _buildPromoCard('Summer Sale', 'Up to 50% Off!', Colors.orange),
+        _buildPromoCard('New Arrivals', 'Shop Now', Colors.deepPurple),
+      ],
+      categories: [
+        _buildActionItem(Icons.checkroom, 'Clothing'),
+        _buildActionItem(Icons.sports_basketball, 'Sports'),
+        _buildActionItem(Icons.watch, 'Accessories'),
+        _buildActionItem(Icons.more_horiz, 'More'),
+      ],
+      productLists: [
         ContentListSectionConfig(
-          title: 'Recommended for You',
+          title: 'Trending Now',
           layoutType: ListLayoutType.horizontal,
-          horizontalHeight: 160,
-          itemSpacing: 16,
-          items: List.generate(
-            5,
-            (index) => _buildProductCard(
-              'Product ${index + 1}',
-              '\$${(index + 1) * 20}',
-            ),
-          ),
-        ),
-
-        // G. Vertical List (e.g. Recent Activity/News)
-        ContentListSectionConfig(
-          title: 'Recent Activity',
-          layoutType: ListLayoutType.vertical,
-          itemSpacing: 12,
+          horizontalHeight: 200,
           items: List.generate(
             4,
-            (index) => ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.receipt_long, color: Colors.grey),
-              ),
-              title: Text('Order #100${index + 5} delivered'),
-              subtitle: Text('2 hours ago'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
+            (index) => _buildProductCard(
+              'Product ${index + 1}',
+              '\$${(index + 1) * 15}',
+            ),
+          ),
+        ),
+        ContentListSectionConfig(
+          title: 'Just For You',
+          layoutType: ListLayoutType.horizontal,
+          horizontalHeight: 200,
+          items: List.generate(
+            4,
+            (index) => _buildProductCard(
+              'Exclusive ${index + 1}',
+              '\$${(index + 1) * 25}',
             ),
           ),
         ),
       ],
     );
-
-    // 3. Render the screen
-    return ModularHomeScreen(config: config, themeDelegate: themeDelegate);
   }
-
-  // --- Helpers for example UI building ---
 
   Widget _buildPromoCard(String title, String subtitle, Color color) {
     return Container(
-      width: double.infinity,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(
-          16,
-        ), // usually handled by theme, but explicit here for the example
+        borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -213,34 +134,10 @@ class HomeDashboard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             subtitle,
-            style: const TextStyle(fontSize: 16, color: Colors.white),
+            style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildActionItem(IconData icon, String label, Color color) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 28),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
     );
   }
 
@@ -250,20 +147,21 @@ class HomeDashboard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-              ),
-              child: const Icon(Icons.image, color: Colors.grey, size: 40),
+              color: Colors.grey.shade200,
+              child: const Center(child: Icon(Icons.image, color: Colors.grey)),
             ),
           ),
           Padding(
@@ -271,13 +169,16 @@ class HomeDashboard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 4),
+                Text(
+                  name,
+                  maxLines: 1,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text(
                   price,
                   style: const TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -287,4 +188,205 @@ class HomeDashboard extends StatelessWidget {
       ),
     );
   }
+}
+
+// -----------------------------------------------------
+// 2. Dashboard Template Showcase
+// -----------------------------------------------------
+class DashboardSection extends StatelessWidget {
+  const DashboardSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DashboardTemplate(
+      title: 'Analytics',
+      greetingTitle: 'Hello, Admin!',
+      greetingSubtitle: 'System performance is optimal.',
+      statWidgets: [
+        _buildStatCard('Total Users', '14,293', Icons.people, Colors.blue),
+        _buildStatCard('Revenue', '\$42,100', Icons.attach_money, Colors.green),
+        _buildStatCard('Sessions', '8,302', Icons.trending_up, Colors.orange),
+        _buildStatCard('Issues', '3', Icons.warning, Colors.red),
+      ],
+      recentActivity: List.generate(
+        5,
+        (index) => ListTile(
+          leading: const CircleAvatar(child: Icon(Icons.receipt)),
+          title: Text('Transaction #${1000 + index}'),
+          subtitle: const Text('2 mins ago'),
+          trailing: const Icon(Icons.chevron_right),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color),
+          const Spacer(),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            title,
+            style: TextStyle(fontSize: 14, color: color.withValues(alpha: 0.8)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// -----------------------------------------------------
+// 3. Social Feed Template Showcase
+// -----------------------------------------------------
+class SocialFeedSection extends StatelessWidget {
+  const SocialFeedSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SocialFeedTemplate(
+      title: 'Social Feed',
+      appBarActions: [
+        IconButton(icon: const Icon(Icons.send), onPressed: () {}),
+      ],
+      stories: [
+        _buildStory('Your Story', true),
+        _buildStory('Alex', false),
+        _buildStory('Sam', false),
+        _buildStory('Jordan', false),
+        _buildStory('Taylor', false),
+        _buildStory('Casey', false),
+      ],
+      feedPosts: [
+        _buildPost('Alex', 'Loving the new flutter package!', '2 mins ago'),
+        _buildPost(
+          'Sam',
+          'Building a dashboard took me 5 minutes.',
+          '1 hour ago',
+        ),
+        _buildPost(
+          'Jordan',
+          'Modular architectures are the future.',
+          '3 hours ago',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStory(String name, bool isUser) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircleAvatar(
+          radius: 32,
+          backgroundColor: isUser ? Colors.grey : Colors.blue,
+          child: CircleAvatar(
+            radius: 29,
+            backgroundColor: Colors.white,
+            child: Icon(isUser ? Icons.add : Icons.person, color: Colors.grey),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(name, style: const TextStyle(fontSize: 12)),
+      ],
+    );
+  }
+
+  Widget _buildPost(String user, String content, String time) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const CircleAvatar(child: Icon(Icons.person)),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      time,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                const Icon(Icons.more_vert),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(content, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            Container(
+              height: 150,
+              color: Colors.grey.shade100,
+              child: const Center(
+                child: Icon(Icons.image, size: 40, color: Colors.grey),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: const [
+                Icon(Icons.favorite_border),
+                Icon(Icons.comment_outlined),
+                Icon(Icons.share_outlined),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Shared helper
+Widget _buildActionItem(IconData icon, String label) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      CircleAvatar(
+        radius: 28,
+        backgroundColor: Colors.grey.shade200,
+        child: Icon(icon, color: Colors.black87),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        label,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+      ),
+    ],
+  );
 }
