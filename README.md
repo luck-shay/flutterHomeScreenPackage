@@ -21,7 +21,7 @@ Building a home screen in Flutter usually means:
 
 ## 🎥 Demo
 
-![App Demo](assets/Recording%202026-03-19%20013915.gif)
+![App Demo](https://raw.githubusercontent.com/luck-shay/flutterHomeScreenPackage/main/assets/demo.gif)
 
 ## 🎨 Prebuilt Templates
 
@@ -56,7 +56,7 @@ Use `home_library` if:
 In your `pubspec.yaml`:
 ```yaml
 dependencies:
-  home_library: ^0.0.3
+  home_library: ^0.1.1
 ```
 
 ## 💻 Example Usage

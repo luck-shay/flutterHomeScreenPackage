@@ -1,3 +1,7 @@
+## 0.1.1
+
+* **Fix:** Fixed visual demo rendering on pub.dev due to URL encoding issues and bumped package snippet documentation.
+
 ## 0.1.0
 
 * **Major Feature:** Added 3 production-ready Prebuilt Layout Templates (`EcommerceTemplate`, `DashboardTemplate`, `SocialFeedTemplate`).
