@@ -1,3 +1,7 @@
+## 0.1.2
+
+* **Fix:** Constrained the README demo GIF dimensions so it scales beautifully on desktop pub.dev displays.
+
 ## 0.1.1
 
 * **Fix:** Fixed visual demo rendering on pub.dev due to URL encoding issues and bumped package snippet documentation.
