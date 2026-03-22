@@ -16,23 +16,33 @@ void main() {
         ),
         BannerSectionConfig(
           banners: [
-            Container(
-              key: const Key('banner1'),
-              height: 100,
-              color: Colors.blue,
+            WidgetItemConfig(
+              widget: Container(
+                key: const Key('banner1'),
+                height: 100,
+                color: Colors.blue,
+              ),
             ),
           ],
         ),
         ActionGridSectionConfig(
           actions: [
-            const Icon(Icons.star, key: Key('action1')),
-            const Icon(Icons.star, key: Key('action2')),
+            const WidgetItemConfig(
+              widget: Icon(Icons.star, key: Key('action1')),
+            ),
+            const WidgetItemConfig(
+              widget: Icon(Icons.star, key: Key('action2')),
+            ),
           ],
         ),
         const DividerSectionConfig(height: 10),
         ContentListSectionConfig(
           title: 'List Title',
-          items: [const Text('Item 1', key: Key('list_item1'))],
+          items: [
+            const WidgetItemConfig(
+              widget: Text('Item 1', key: Key('list_item1')),
+            ),
+          ],
         ),
         CustomSectionConfig(
           builder: (context) =>

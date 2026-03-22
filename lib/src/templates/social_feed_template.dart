@@ -45,7 +45,7 @@ class SocialFeedTemplate extends StatelessWidget {
               title: '', // typically stories have no explicit title in UI
               layoutType: ListLayoutType.horizontal,
               horizontalHeight: 120, // tall enough for avatars + text
-              items: stories,
+              items: stories.map((w) => WidgetItemConfig(widget: w)).toList(),
             ),
             const DividerSectionConfig(height: 16, thickness: 1),
           ],

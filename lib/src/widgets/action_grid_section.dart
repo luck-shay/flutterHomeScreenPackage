@@ -42,7 +42,7 @@ class ActionGridSection extends StatelessWidget {
           ),
           itemCount: config.actions.length,
           itemBuilder: (context, index) {
-            return config.actions[index];
+            return config.actions[index].build(context);
           },
         );
       },

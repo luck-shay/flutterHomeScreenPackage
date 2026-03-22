@@ -1,4 +1,6 @@
 export 'src/core/modular_home_screen.dart';
+export 'src/core/item_config.dart';
+export 'src/core/component_registry.dart';
 export 'src/models/home_config.dart';
 export 'src/models/section_config.dart';
 export 'src/theme/home_theme_delegate.dart';

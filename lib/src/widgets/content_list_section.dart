@@ -42,7 +42,7 @@ class ContentListSection extends StatelessWidget {
           separatorBuilder: (context, index) =>
               SizedBox(width: config.itemSpacing),
           itemBuilder: (context, index) {
-            return config.items[index];
+            return config.items[index].build(context);
           },
         ),
       );
@@ -54,7 +54,7 @@ class ContentListSection extends StatelessWidget {
         separatorBuilder: (context, index) =>
             SizedBox(height: config.itemSpacing),
         itemBuilder: (context, index) {
-          return config.items[index];
+          return config.items[index].build(context);
         },
       );
     }

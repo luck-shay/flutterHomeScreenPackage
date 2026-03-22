@@ -59,20 +59,26 @@ class EcommerceTemplate extends StatelessWidget {
           HeaderSectionConfig(
             title: greetingTitle,
             subtitle: greetingSubtitle,
-            trailingWidget: profileWidget,
+            trailingAction: profileWidget != null
+                ? WidgetItemConfig(widget: profileWidget!)
+                : null,
           ),
 
           if (promoBanners.isNotEmpty)
             BannerSectionConfig(
               layoutType: BannerLayoutType.carousel,
               autoPlay: true,
-              banners: promoBanners,
+              banners: promoBanners
+                  .map((w) => WidgetItemConfig(widget: w))
+                  .toList(),
             ),
 
           if (categories.isNotEmpty)
             ActionGridSectionConfig(
               crossAxisCount: categories.length >= 4 ? 4 : categories.length,
-              actions: categories,
+              actions: categories
+                  .map((w) => WidgetItemConfig(widget: w))
+                  .toList(),
             ),
 
           if ((categories.isNotEmpty || promoBanners.isNotEmpty) &&

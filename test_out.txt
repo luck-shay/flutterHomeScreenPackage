@@ -1,0 +1,15 @@
+﻿00:00 +0: loading D:/GitHub/home_library/test/json_parsing_test.dart
+00:00 +0: HomeConfig JSON Parsing Tests Parses a complete valid configuration
+00:00 +1: HomeConfig JSON Parsing Tests Throws JsonValidationException on unsupported version
+00:00 +2: HomeConfig JSON Parsing Tests Throws UnknownSectionException for unregistered section wrapper
+00:00 +3: HomeConfig JSON Parsing Tests Throws UnknownComponentException if no fallback provided
+00:00 +4: HomeConfig JSON Parsing Tests Validates empty and partial states do not crash
+00:00 +4 -1: HomeConfig JSON Parsing Tests Validates empty and partial states do not crash [E]
+  Invalid argument(s): ComponentRegistry is required to parse BannerSectionConfig banners from JSON.
+  package:home_library/src/models/section_config.dart 175:7  new BannerSectionConfig.fromJson
+  package:home_library/src/core/section_registry.dart 15:48  SectionRegistry._builders.<fn>
+  package:home_library/src/core/section_registry.dart 45:30  SectionRegistry.buildSection
+  package:home_library/src/models/home_config.dart 51:39     new HomeConfig.fromJson
+  test\json_parsing_test.dart 138:33                         main.<fn>.<fn>
+  
+00:00 +4 -1: Some tests failed.

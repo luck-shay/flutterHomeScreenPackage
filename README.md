@@ -58,7 +58,7 @@ Use `home_library` if:
 In your `pubspec.yaml`:
 ```yaml
 dependencies:
-  home_library: ^0.1.2
+  home_library: ^0.2.1
 ```
 
 ## 💻 Example Usage
@@ -202,6 +202,28 @@ class StorefrontHomeScreen extends StatelessWidget {
 }
 ```
 
+## 🌐 Server-Driven UI (JSON Configuration)
+
+`home_library` securely treats structural configurations as serializable layout definitions. This allows you to construct dynamic screens entirely via API payloads!
+
+Using the dual-registry architecture (`SectionRegistry` & `ComponentRegistry`), standard structural boundaries dynamically render pure-data `ItemConfig` mappings.
+
+```dart
+final registry = ComponentRegistry(
+  fallbackBuilder: (type, json) => Text('Unknown format: $type')
+);
+
+registry.register('promo_card', (json) {
+  // Deserialize your concrete ItemConfig directly from backend data!
+  return MyPromoCardConfig(title: json['title']);
+});
+
+// Assuming payload is Map<String, dynamic> derived from standard jsonDecode(...)
+final config = HomeConfig.fromJson(payload, componentRegistry: registry);
+
+return ModularHomeScreen(config: config);
+```
+
 ## 🛠 Advanced Customization
 
 Pass a `themeDelegate` to seamlessly change the foundational styling logic for your sections.
@@ -221,8 +243,8 @@ ModularHomeScreen(
 
 We are actively working to take `home_library` to the next level:
 - 🥇 **Prebuilt layouts:** Drop-in E-commerce, Dashboard, and Social Feed screens.
-- 🥈 **Section-based architecture:** Refined direct programmatic section composition.
-- 🥉 **JSON-driven UI:** Dynamically build layouts directly from backend JSON responses.
+- 🥈 **JSON-driven UI:** Dynamically build layouts directly from backend JSON responses using the component registry pipeline.
+- 🥉 **Section-based architecture:** Refined direct programmatic section composition.
 - 🧠 **Theming system:** Light/dark toggle support and explicit section-level themes.
 
 ## 🤝 Contributing

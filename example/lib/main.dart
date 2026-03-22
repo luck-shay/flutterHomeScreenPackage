@@ -90,9 +90,11 @@ class EcommerceSection extends StatelessWidget {
           horizontalHeight: 200,
           items: List.generate(
             4,
-            (index) => _buildProductCard(
-              'Product ${index + 1}',
-              '\$${(index + 1) * 15}',
+            (index) => WidgetItemConfig(
+              widget: _buildProductCard(
+                'Product ${index + 1}',
+                '\$${(index + 1) * 15}',
+              ),
             ),
           ),
         ),
@@ -102,9 +104,11 @@ class EcommerceSection extends StatelessWidget {
           horizontalHeight: 200,
           items: List.generate(
             4,
-            (index) => _buildProductCard(
-              'Exclusive ${index + 1}',
-              '\$${(index + 1) * 25}',
+            (index) => WidgetItemConfig(
+              widget: _buildProductCard(
+                'Exclusive ${index + 1}',
+                '\$${(index + 1) * 25}',
+              ),
             ),
           ),
         ),

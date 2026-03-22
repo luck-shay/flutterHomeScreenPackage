@@ -92,7 +92,8 @@ class ModularHomeScreen extends StatelessWidget {
                     ),
               ),
             ),
-            if (config.trailingWidget != null) config.trailingWidget!,
+            if (config.trailingAction != null)
+              config.trailingAction!.build(context),
           ],
         ),
         if (config.subtitle != null) ...[
@@ -135,7 +136,7 @@ class ModularHomeScreen extends StatelessWidget {
     return Divider(
       height: config.height,
       thickness: config.thickness,
-      color: config.color,
+      color: config.colorValue != null ? Color(config.colorValue!) : null,
     );
   }
 }

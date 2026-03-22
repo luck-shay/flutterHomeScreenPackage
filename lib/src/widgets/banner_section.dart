@@ -47,7 +47,7 @@ class _BannerSectionState extends State<BannerSection> {
                 borderRadius: BorderRadius.circular(
                   16.0,
                 ), // Hardcoded for now. In prod rely on HomeThemeDelegate
-                child: widget.config.banners[index],
+                child: widget.config.banners[index].build(context),
               ),
             );
           },
@@ -61,7 +61,7 @@ class _BannerSectionState extends State<BannerSection> {
             padding: const EdgeInsets.only(bottom: 16.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16.0),
-              child: bannerWidget,
+              child: bannerWidget.build(context),
             ),
           );
         }).toList(),

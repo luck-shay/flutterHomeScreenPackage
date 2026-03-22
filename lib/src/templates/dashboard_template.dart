@@ -62,7 +62,9 @@ class DashboardTemplate extends StatelessWidget {
           if (statWidgets.isNotEmpty)
             ActionGridSectionConfig(
               crossAxisCount: statsCrossAxisCount,
-              actions: statWidgets,
+              actions: statWidgets
+                  .map((w) => WidgetItemConfig(widget: w))
+                  .toList(),
             ),
 
           if (statWidgets.isNotEmpty && recentActivity.isNotEmpty)
@@ -72,7 +74,9 @@ class DashboardTemplate extends StatelessWidget {
             ContentListSectionConfig(
               title: 'Recent Activity',
               layoutType: ListLayoutType.vertical,
-              items: recentActivity,
+              items: recentActivity
+                  .map((w) => WidgetItemConfig(widget: w))
+                  .toList(),
             ),
 
           ...additionalSections,

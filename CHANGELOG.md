@@ -1,3 +1,14 @@
+## 0.2.1
+
+* **Docs:** Updated `README.md` to reflect the latest `0.2.1` version in installation instructions.
+
+## 0.2.0
+
+* **Major Feature (Server-Driven UI):** `HomeConfig.fromJson(json, componentRegistry: ...)` is now entirely supported! You can define your home layouts remotely and safely map JSON types to widgets.
+* **Architecture Change:** Separated layout structure (`SectionRegistry`) and layout content constraints (`ComponentRegistry`) to ensure robust parsing boundaries.
+* **Component Abstraction:** Removed tight `Widget` object dependency inside standard section models (`ActionGridSectionConfig`, `ContentListSectionConfig`, etc.), swapping them with data-oriented `ItemConfig` implementations for deep JSON serialization flexibility.
+* **Migration / Compat:** Wrapped legacy direct-widget instances automatically into `WidgetItemConfig` instances for a backward-compatible and smooth transition.
+
 ## 0.1.2
 
 * **Fix:** Constrained the README demo GIF dimensions so it scales beautifully on desktop pub.dev displays.
