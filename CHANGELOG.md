@@ -1,3 +1,8 @@
+## 0.3.1
+
+* **Fix:** Appended version query parameters manually into the `README.md` image tags to bypass GitHub CDN caching so the updated demo GIF successfully propagates on pub.dev.
+* **Docs:** Updated installation string to bounds `0.3.1`.
+
 ## 0.3.0
 
 * **Major Architecture Upgrade:** Evolved from a simple layout builder to a **production-grade Server-Driven UI (SDUI) Framework**. 
