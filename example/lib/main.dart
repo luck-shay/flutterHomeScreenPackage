@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:home_library/home_library.dart';
 
@@ -36,6 +37,7 @@ class _MainAppTabsState extends State<MainAppTabs> {
     const EcommerceSection(),
     const DashboardSection(),
     const SocialFeedSection(),
+    const ServerDrivenSection(),
   ];
 
   @override
@@ -45,6 +47,7 @@ class _MainAppTabsState extends State<MainAppTabs> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Store'),
           BottomNavigationBarItem(
@@ -52,6 +55,7 @@ class _MainAppTabsState extends State<MainAppTabs> {
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.feed), label: 'Feed'),
+          BottomNavigationBarItem(icon: Icon(Icons.cloud_download), label: 'Remote UI'),
         ],
       ),
     );
@@ -394,3 +398,110 @@ Widget _buildActionItem(IconData icon, String label) {
     ],
   );
 }
+
+// -----------------------------------------------------
+// 4. Server-Driven UI Showcase
+// -----------------------------------------------------
+class ServerDrivenSection extends StatefulWidget {
+  const ServerDrivenSection({super.key});
+
+  @override
+  State<ServerDrivenSection> createState() => _ServerDrivenSectionState();
+}
+
+class _ServerDrivenSectionState extends State<ServerDrivenSection> {
+  HomeConfig? _config;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRemoteConfig();
+  }
+
+  Future<void> _loadRemoteConfig() async {
+    try {
+      final jsonString = await DefaultAssetBundle.of(context)
+          .loadString('assets/remote_layout.json');
+      final payload = jsonDecode(jsonString) as Map<String, dynamic>;
+
+      final registry = ComponentRegistry(
+        fallbackBuilder: (type, json) => WidgetItemConfig(
+          widget: Text('Unknown component: $type', style: const TextStyle(color: Colors.red)),
+        ),
+      );
+
+      // Register components defined in our mock JSON!
+      registry.register('remote_promo', (json) {
+        final title = json['title'] as String? ?? '';
+        final subtitle = json['subtitle'] as String? ?? '';
+        final colorValue = json['colorValue'] as int? ?? 0xFF000000;
+        
+        return WidgetItemConfig(
+          widget: Container(
+            decoration: BoxDecoration(
+              color: Color(colorValue),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                if (subtitle.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(subtitle, style: const TextStyle(fontSize: 16, color: Colors.white70)),
+                ],
+              ],
+            ),
+          ),
+        );
+      });
+
+      registry.register('remote_product', (json) {
+        final name = json['name'] as String? ?? '';
+        final price = json['price'] as String? ?? '';
+        return WidgetItemConfig(
+          widget: Container(
+            width: 140,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Expanded(child: Center(child: Icon(Icons.inventory_2, size: 40))),
+                Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(price, style: const TextStyle(color: Colors.green)),
+              ],
+            ),
+          ),
+        );
+      });
+
+      // Pass debugMode: true to observe the internal logger print the JSON mapping!
+      setState(() {
+        _config = HomeConfig.fromJson(payload, componentRegistry: registry, debugMode: true);
+      });
+    } catch (e, st) {
+      debugPrint('Error loading SDUI: $e\n$st');
+      setState(() => _hasError = true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return const Center(child: Text('Failed to load remote configuration. Check logs.', style: TextStyle(color: Colors.red)));
+    }
+    if (_config == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return ModularHomeScreen(config: _config!);
+  }
+}
+

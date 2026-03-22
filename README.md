@@ -1,8 +1,8 @@
 # Modular Home Screen (`home_library`)
 
-Build dynamic, customizable, and hyper-performant Flutter home screens in minutes.
+A production-grade **Server-Driven UI (SDUI) Engine** to build dynamic, customizable, and hyper-performant Flutter home screens entirely from JSON payloads in minutes.
 
-`home_library` is a Flutter package that helps you quickly create modular and reusable home screen layouts using plug-and-play components. Instead of rewriting standard scroll behaviors, sticky headers, and complicated grids, you can structure your home screen using flexible sections backed by a powerful `CustomScrollView` + `Sliver` architecture.
+`home_library` is a Flutter package that shifts layout configurations from static application code to dynamic architecture constraints. Define robust `Section` templates remotely, ingest them through resilient data-parsers safely against schema mismatches, and orchestrate them via a powerful `CustomScrollView` + `Sliver` structure.
 
 ## 🚨 The Problem
 
@@ -14,10 +14,11 @@ Building a home screen in Flutter usually means:
 
 ## ✅ The Solution
 
-`home_library` solves this by providing:
-- **Declarative Configuration:** Build complex layouts easily via typed data models.
-- **Plug-and-play modular sections:** Reusable components ready to drop in.
-- **Clean and scalable architecture:** Easily maintain large and dynamic dashboards.
+`home_library` solves this by transforming home screens to a remote infrastructural backend:
+- **Declarative JSON Configuration:** Build complex layouts easily via typed data models fetched live avoiding Play/App Store deployments.
+- **Robust Type Mapping Constraints:** Prevent structural API mismatch faults implicitly using data primitives coercions (`JsonParserUtils`).
+- **Plug-and-play modular sections:** Reusable structural blocks automatically tracked perfectly using `ValueKey` injections avoiding layout jumping.
+- **Clean and scalable architecture:** Decoupled structural data (`SectionRegistry`) and UI constraint logic (`ComponentRegistry`).
 
 ## 🎥 Demo
 
@@ -58,7 +59,7 @@ Use `home_library` if:
 In your `pubspec.yaml`:
 ```yaml
 dependencies:
-  home_library: ^0.2.1
+  home_library: ^0.3.0
 ```
 
 ## 💻 Example Usage

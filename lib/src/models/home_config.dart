@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import '../core/component_registry.dart';
 import '../core/section_registry.dart';
 import '../core/exceptions.dart';
+import '../core/json_parser_utils.dart';
+import '../core/home_logger.dart';
 import 'section_config.dart';
 
 /// The root configuration object passed to the ModularHomeScreen.
@@ -35,13 +37,20 @@ class HomeConfig {
   factory HomeConfig.fromJson(
     Map<String, dynamic> json, {
     ComponentRegistry? componentRegistry,
+    bool debugMode = false,
   }) {
-    final version = json['version'] as int?;
+    HomeLogger.enableLogging = debugMode;
+    HomeLogger.info('Initializing SDUI Engine parsing...');
+
+    final version = JsonParserUtils.safeInt(json['version']);
     if (version != currentSupportedVersion) {
+      HomeLogger.error('Unsupported JSON config version. Expected $currentSupportedVersion, but got $version.');
       throw JsonValidationException(
         'Unsupported JSON config version. Expected $currentSupportedVersion, but got $version.',
       );
     }
+    
+    HomeLogger.info('Engine version validated correctly: $version');
 
     final rawSections = json['sections'] as List<dynamic>? ?? [];
     final List<HomeSectionConfig> parsedSections = [];
@@ -54,10 +63,12 @@ class HomeConfig {
       );
       parsedSections.add(section);
     }
+    
+    HomeLogger.info('Successfully parsed ${parsedSections.length} sections.');
 
     return HomeConfig(
       sections: parsedSections,
-      backgroundColorValue: json['backgroundColorValue'] as int?,
+      backgroundColorValue: JsonParserUtils.safeInt(json['backgroundColorValue']),
       appBar:
           null, // AppBar is untyped flutter widget, omitted from typical pure JSON representations.
     );

@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "backgroundColorValue": 4294638330,
+  "sections": [
+    {
+      "type": "header",
+      "id": "welcome_header",
+      "title": "Server-Driven Demo",
+      "subtitle": "Rendered completely from JSON API payloads without app updates!"
+    },
+    {
+      "type": "banner",
+      "id": "promo_carousels",
+      "layoutType": "carousel",
+      "autoPlay": true,
+      "banners": [
+        {
+          "type": "remote_promo",
+          "title": "Remote 50% Off",
+          "subtitle": "Loaded explicitly via JSON pipeline",
+          "colorValue": 4294936640
+        },
+        {
+          "type": "remote_promo",
+          "title": "Update Instantly",
+          "subtitle": "Change layout layouts instantly",
+          "colorValue": 4282559720
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "id": "split_1",
+      "height": 20
+    },
+    {
+      "type": "content_list",
+      "id": "remote_items",
+      "title": "Remote Products",
+      "layoutType": "horizontal",
+      "horizontalHeight": 220,
+      "items": [
+        {
+          "type": "remote_product",
+          "name": "SDUI Headphones",
+          "price": "$199"
+        },
+        {
+          "type": "remote_product",
+          "name": "SDUI Smartwatch",
+          "price": "$299"
+        },
+        {
+          "type": "remote_product",
+          "name": "Mechanical Keyboard",
+          "price": "$129"
+        }
+      ]
+    }
+  ]
+}

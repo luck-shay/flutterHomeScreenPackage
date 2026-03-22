@@ -1,3 +1,11 @@
+## 0.3.0
+
+* **Major Architecture Upgrade:** Evolved from a simple layout builder to a **production-grade Server-Driven UI (SDUI) Framework**. 
+* **Validation Layer (`JsonParserUtils`):** Added strict primitive coercers to protect the parsing engine from malformed remote JSON schema data types (e.g. string integers gracefully casted).
+* **SDUI Identity (`ValueKey`):** `ModularHomeScreen` now automatically maps explicit rendering keys to all Sections utilizing the JSON `id` parameter. This prevents state loss and animation jank during remote refetches.
+* **Observability (`HomeLogger`):** Included a built-in diagnostic logging toggle natively inside `HomeConfig.fromJson(json, debugMode: true)` to actively print component mapping boundaries or warn when generic fallback builders drop unknown elements.
+* **Example Enhancements:** Created a new application tab fully loading `mock_server_layout.json` into the engine natively via HTTP-simulated asset fetches. 
+
 ## 0.2.1
 
 * **Docs:** Updated `README.md` to reflect the latest `0.2.1` version in installation instructions.

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import '../core/component_registry.dart';
 import '../core/item_config.dart';
+import '../core/json_parser_utils.dart';
 
 /// The abstract base class that all section configurations must extend.
 abstract class HomeSectionConfig {
@@ -73,7 +74,7 @@ class ContentListSectionConfig extends HomeSectionConfig {
       );
     }
 
-    final typeStr = json['layoutType'] as String?;
+    final typeStr = JsonParserUtils.safeString(json['layoutType']);
     final layoutType = typeStr == 'horizontal'
         ? ListLayoutType.horizontal
         : ListLayoutType.vertical;
@@ -84,13 +85,13 @@ class ContentListSectionConfig extends HomeSectionConfig {
         .toList();
 
     return ContentListSectionConfig(
-      id: json['id'] as String?,
-      title: json['title'] as String? ?? '',
+      id: JsonParserUtils.safeString(json['id']),
+      title: JsonParserUtils.safeString(json['title']) ?? '',
       items: parsedItems,
       layoutType: layoutType,
-      itemSpacing: (json['itemSpacing'] as num?)?.toDouble() ?? 16.0,
-      horizontalHeight: (json['horizontalHeight'] as num?)?.toDouble() ?? 200.0,
-      spacingBelow: (json['spacingBelow'] as num?)?.toDouble(),
+      itemSpacing: JsonParserUtils.safeDouble(json['itemSpacing']) ?? 16.0,
+      horizontalHeight: JsonParserUtils.safeDouble(json['horizontalHeight']) ?? 200.0,
+      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }
 }
@@ -130,11 +131,11 @@ class ActionGridSectionConfig extends HomeSectionConfig {
         .toList();
 
     return ActionGridSectionConfig(
-      id: json['id'] as String?,
+      id: JsonParserUtils.safeString(json['id']),
       actions: parsedActions,
-      crossAxisCount: json['crossAxisCount'] as int? ?? 4,
-      spacing: (json['spacing'] as num?)?.toDouble() ?? 16.0,
-      spacingBelow: (json['spacingBelow'] as num?)?.toDouble(),
+      crossAxisCount: JsonParserUtils.safeInt(json['crossAxisCount']) ?? 4,
+      spacing: JsonParserUtils.safeDouble(json['spacing']) ?? 16.0,
+      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }
 }
@@ -177,7 +178,7 @@ class BannerSectionConfig extends HomeSectionConfig {
       );
     }
 
-    final typeStr = json['layoutType'] as String?;
+    final typeStr = JsonParserUtils.safeString(json['layoutType']);
     final layoutType = typeStr == 'carousel'
         ? BannerLayoutType.carousel
         : BannerLayoutType.standard;
@@ -188,11 +189,11 @@ class BannerSectionConfig extends HomeSectionConfig {
         .toList();
 
     return BannerSectionConfig(
-      id: json['id'] as String?,
+      id: JsonParserUtils.safeString(json['id']),
       banners: parsedBanners,
       layoutType: layoutType,
-      autoPlay: json['autoPlay'] as bool? ?? true,
-      spacingBelow: (json['spacingBelow'] as num?)?.toDouble(),
+      autoPlay: JsonParserUtils.safeBool(json['autoPlay']) ?? true,
+      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }
 }
@@ -218,11 +219,11 @@ class DividerSectionConfig extends HomeSectionConfig {
 
   factory DividerSectionConfig.fromJson(Map<String, dynamic> json) {
     return DividerSectionConfig(
-      id: json['id'] as String?,
-      height: (json['height'] as num?)?.toDouble() ?? 32.0,
-      thickness: (json['thickness'] as num?)?.toDouble(),
-      colorValue: json['colorValue'] as int?,
-      spacingBelow: (json['spacingBelow'] as num?)?.toDouble(),
+      id: JsonParserUtils.safeString(json['id']),
+      height: JsonParserUtils.safeDouble(json['height']) ?? 32.0,
+      thickness: JsonParserUtils.safeDouble(json['thickness']),
+      colorValue: JsonParserUtils.safeInt(json['colorValue']),
+      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }
 }
@@ -248,10 +249,10 @@ class HeaderSectionConfig extends HomeSectionConfig {
 
   factory HeaderSectionConfig.fromJson(Map<String, dynamic> json) {
     return HeaderSectionConfig(
-      id: json['id'] as String?,
-      title: json['title'] as String? ?? '',
-      subtitle: json['subtitle'] as String?,
-      spacingBelow: (json['spacingBelow'] as num?)?.toDouble(),
+      id: JsonParserUtils.safeString(json['id']),
+      title: JsonParserUtils.safeString(json['title']) ?? '',
+      subtitle: JsonParserUtils.safeString(json['subtitle']),
+      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }
 }

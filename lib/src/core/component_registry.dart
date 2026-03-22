@@ -1,5 +1,7 @@
 import 'item_config.dart';
 import 'exceptions.dart';
+import 'json_parser_utils.dart';
+import 'home_logger.dart';
 
 /// Builder alias for mapping a raw JSON payload to a concrete [ItemConfig].
 typedef ComponentBuilder = ItemConfig Function(Map<String, dynamic> json);
@@ -29,17 +31,20 @@ class ComponentRegistry {
 
   /// Map an inner JSON object to an [ItemConfig] resolving UI structure.
   ItemConfig buildComponent(Map<String, dynamic> json) {
-    final type = json['type'] as String?;
+    final type = JsonParserUtils.safeString(json['type']);
 
     if (type == null) {
+      HomeLogger.error('Component mapped to registry missing "type" key constraints.');
       throw JsonValidationException('Component JSON missing "type" key.');
     }
 
     if (_builders.containsKey(type)) {
       return _builders[type]!(json);
     } else if (fallbackBuilder != null) {
+      HomeLogger.warn('Resolving unregistered component "$type" via explicit fallback schema handler.');
       return fallbackBuilder!(type, json);
     } else {
+      HomeLogger.error('Component parsing bound failed natively for unknown type: $type');
       throw UnknownComponentException(
         type,
         'No builder or fallback provided for component type: $type',

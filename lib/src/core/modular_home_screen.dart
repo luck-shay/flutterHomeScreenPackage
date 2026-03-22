@@ -44,6 +44,9 @@ class ModularHomeScreen extends StatelessWidget {
                     sectionConfig.spacingBelow ?? themeDelegate.sectionSpacing;
 
                 return Padding(
+                  key: sectionConfig.id != null
+                      ? ValueKey('section_${sectionConfig.id}')
+                      : null,
                   padding: EdgeInsets.only(bottom: bottomSpacing),
                   child: _buildSection(context, sectionConfig),
                 );
