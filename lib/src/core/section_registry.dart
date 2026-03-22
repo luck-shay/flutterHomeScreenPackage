@@ -34,12 +34,16 @@ class SectionRegistry {
     final type = JsonParserUtils.safeString(json['type']);
 
     if (type == null) {
-      HomeLogger.error('Section JSON is structurally invalid (missing "type" string).');
+      HomeLogger.error(
+        'Section JSON is structurally invalid (missing "type" string).',
+      );
       throw JsonValidationException('Section JSON missing "type" key.');
     }
 
     if (type == 'custom') {
-      HomeLogger.warn('Encountered custom layout section directly in JSON which is unsupported implicitly.');
+      HomeLogger.warn(
+        'Encountered custom layout section directly in JSON which is unsupported implicitly.',
+      );
       throw UnsupportedError(
         'CustomSectionConfig cannot be deserialized strictly from JSON via the standard parser. '
         'Consider utilizing custom ComponentRegistries for standard data mappings.',

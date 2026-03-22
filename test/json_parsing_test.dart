@@ -107,7 +107,7 @@ void main() {
 
     test('Throws UnknownComponentException if no fallback provided', () {
       final strictRegistry = ComponentRegistry(); // no fallback
-      
+
       final jsonPayload = {
         'version': 1,
         'sections': [
@@ -121,7 +121,8 @@ void main() {
       };
 
       expect(
-        () => HomeConfig.fromJson(jsonPayload, componentRegistry: strictRegistry),
+        () =>
+            HomeConfig.fromJson(jsonPayload, componentRegistry: strictRegistry),
         throwsA(isA<UnknownComponentException>()),
       );
     });
@@ -135,7 +136,10 @@ void main() {
         ],
       };
 
-      final parsed = HomeConfig.fromJson(jsonPayload, componentRegistry: registry);
+      final parsed = HomeConfig.fromJson(
+        jsonPayload,
+        componentRegistry: registry,
+      );
       expect(parsed.sections.length, 2);
 
       final divider = parsed.sections[0] as DividerSectionConfig;

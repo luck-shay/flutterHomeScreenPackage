@@ -34,17 +34,23 @@ class ComponentRegistry {
     final type = JsonParserUtils.safeString(json['type']);
 
     if (type == null) {
-      HomeLogger.error('Component mapped to registry missing "type" key constraints.');
+      HomeLogger.error(
+        'Component mapped to registry missing "type" key constraints.',
+      );
       throw JsonValidationException('Component JSON missing "type" key.');
     }
 
     if (_builders.containsKey(type)) {
       return _builders[type]!(json);
     } else if (fallbackBuilder != null) {
-      HomeLogger.warn('Resolving unregistered component "$type" via explicit fallback schema handler.');
+      HomeLogger.warn(
+        'Resolving unregistered component "$type" via explicit fallback schema handler.',
+      );
       return fallbackBuilder!(type, json);
     } else {
-      HomeLogger.error('Component parsing bound failed natively for unknown type: $type');
+      HomeLogger.error(
+        'Component parsing bound failed natively for unknown type: $type',
+      );
       throw UnknownComponentException(
         type,
         'No builder or fallback provided for component type: $type',

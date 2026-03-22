@@ -44,12 +44,14 @@ class HomeConfig {
 
     final version = JsonParserUtils.safeInt(json['version']);
     if (version != currentSupportedVersion) {
-      HomeLogger.error('Unsupported JSON config version. Expected $currentSupportedVersion, but got $version.');
+      HomeLogger.error(
+        'Unsupported JSON config version. Expected $currentSupportedVersion, but got $version.',
+      );
       throw JsonValidationException(
         'Unsupported JSON config version. Expected $currentSupportedVersion, but got $version.',
       );
     }
-    
+
     HomeLogger.info('Engine version validated correctly: $version');
 
     final rawSections = json['sections'] as List<dynamic>? ?? [];
@@ -63,12 +65,14 @@ class HomeConfig {
       );
       parsedSections.add(section);
     }
-    
+
     HomeLogger.info('Successfully parsed ${parsedSections.length} sections.');
 
     return HomeConfig(
       sections: parsedSections,
-      backgroundColorValue: JsonParserUtils.safeInt(json['backgroundColorValue']),
+      backgroundColorValue: JsonParserUtils.safeInt(
+        json['backgroundColorValue'],
+      ),
       appBar:
           null, // AppBar is untyped flutter widget, omitted from typical pure JSON representations.
     );

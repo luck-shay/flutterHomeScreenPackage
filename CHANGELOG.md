@@ -1,3 +1,8 @@
+## 0.3.2
+
+* **Fix (Docs):** Explicitly renamed the layout demonstration asset to permanently bypass upstream pub.dev caching walls. 
+* **Polish:** Stripped default Flutter boilerplate scaffolding and tightened `pubspec.yaml` definitions to match production-grade expectations.
+
 ## 0.3.1
 
 * **Fix:** Appended version query parameters manually into the `README.md` image tags to bypass GitHub CDN caching so the updated demo GIF successfully propagates on pub.dev.

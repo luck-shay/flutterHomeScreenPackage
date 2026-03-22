@@ -90,7 +90,8 @@ class ContentListSectionConfig extends HomeSectionConfig {
       items: parsedItems,
       layoutType: layoutType,
       itemSpacing: JsonParserUtils.safeDouble(json['itemSpacing']) ?? 16.0,
-      horizontalHeight: JsonParserUtils.safeDouble(json['horizontalHeight']) ?? 200.0,
+      horizontalHeight:
+          JsonParserUtils.safeDouble(json['horizontalHeight']) ?? 200.0,
       spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }

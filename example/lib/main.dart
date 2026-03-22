@@ -55,7 +55,10 @@ class _MainAppTabsState extends State<MainAppTabs> {
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.feed), label: 'Feed'),
-          BottomNavigationBarItem(icon: Icon(Icons.cloud_download), label: 'Remote UI'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cloud_download),
+            label: 'Remote UI',
+          ),
         ],
       ),
     );
@@ -421,13 +424,17 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
 
   Future<void> _loadRemoteConfig() async {
     try {
-      final jsonString = await DefaultAssetBundle.of(context)
-          .loadString('assets/remote_layout.json');
+      final jsonString = await DefaultAssetBundle.of(
+        context,
+      ).loadString('assets/remote_layout.json');
       final payload = jsonDecode(jsonString) as Map<String, dynamic>;
 
       final registry = ComponentRegistry(
         fallbackBuilder: (type, json) => WidgetItemConfig(
-          widget: Text('Unknown component: $type', style: const TextStyle(color: Colors.red)),
+          widget: Text(
+            'Unknown component: $type',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
       );
 
@@ -436,7 +443,7 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
         final title = json['title'] as String? ?? '';
         final subtitle = json['subtitle'] as String? ?? '';
         final colorValue = json['colorValue'] as int? ?? 0xFF000000;
-        
+
         return WidgetItemConfig(
           widget: Container(
             decoration: BoxDecoration(
@@ -448,10 +455,20 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
                 if (subtitle.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  Text(subtitle, style: const TextStyle(fontSize: 16, color: Colors.white70)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
+                  ),
                 ],
               ],
             ),
@@ -474,8 +491,15 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Expanded(child: Center(child: Icon(Icons.inventory_2, size: 40))),
-                Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const Expanded(
+                  child: Center(child: Icon(Icons.inventory_2, size: 40)),
+                ),
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text(price, style: const TextStyle(color: Colors.green)),
               ],
             ),
@@ -485,7 +509,11 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
 
       // Pass debugMode: true to observe the internal logger print the JSON mapping!
       setState(() {
-        _config = HomeConfig.fromJson(payload, componentRegistry: registry, debugMode: true);
+        _config = HomeConfig.fromJson(
+          payload,
+          componentRegistry: registry,
+          debugMode: true,
+        );
       });
     } catch (e, st) {
       debugPrint('Error loading SDUI: $e\n$st');
@@ -496,7 +524,12 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
   @override
   Widget build(BuildContext context) {
     if (_hasError) {
-      return const Center(child: Text('Failed to load remote configuration. Check logs.', style: TextStyle(color: Colors.red)));
+      return const Center(
+        child: Text(
+          'Failed to load remote configuration. Check logs.',
+          style: TextStyle(color: Colors.red),
+        ),
+      );
     }
     if (_config == null) {
       return const Center(child: CircularProgressIndicator());
@@ -504,4 +537,3 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
     return ModularHomeScreen(config: _config!);
   }
 }
-
