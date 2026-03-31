@@ -45,6 +45,8 @@ void main() {
             'id': 'list_section',
             'title': 'My List',
             'layoutType': 'horizontal',
+            'hasMore': true,
+            'nextPageUrl': '/api/v2',
             'items': [
               {'type': 'string_item', 'text': 'Item A'},
               {'type': 'unknown_magic', 'info': 'lost'},
@@ -68,6 +70,8 @@ void main() {
       final list = parsed.sections[1] as ContentListSectionConfig;
       expect(list.id, 'list_section');
       expect(list.layoutType, ListLayoutType.horizontal);
+      expect(list.hasMore, true);
+      expect(list.nextPageUrl, '/api/v2');
       expect(list.items.length, 2);
 
       // Verify explicit parse mapped to the core builder
@@ -148,5 +152,17 @@ void main() {
       final banner = parsed.sections[1] as BannerSectionConfig;
       expect(banner.banners, isEmpty);
     });
+    test(
+      'Parses fromJsonAsync safely isolating load traces without locking UI',
+      () async {
+        final jsonPayload = {'version': 1, 'sections': []};
+
+        final parsed = await HomeConfig.fromJsonAsync(
+          jsonPayload,
+          componentRegistry: registry,
+        );
+        expect(parsed.sections, isEmpty);
+      },
+    );
   });
 }

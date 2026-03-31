@@ -59,7 +59,7 @@ Use `home_library` if:
 In your `pubspec.yaml`:
 ```yaml
 dependencies:
-  home_library: ^0.3.2
+  home_library: ^0.4.0
 ```
 
 ## 💻 Example Usage

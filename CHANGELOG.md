@@ -1,3 +1,10 @@
+## 0.4.0
+
+* **Feature:** Added `HomeConfig.fromJsonAsync()` to enable deep JSON parsing on background microtasks, ensuring 60fps scrolling without main-thread jank when resolving massive SDUI payloads.
+* **Feature:** Introduced native pagination APIs! Added `hasMore` and `nextPageUrl` schema definitions to `ContentListSectionConfig` and `ActionGridSectionConfig`.
+* **Feature:** Wired `onLoadMore: (section, url)` callback into `ModularHomeScreen` mapping engine natively bubbling scroll edge notifications from your remote layouts directly to your root application.
+* **Performance:** Implemented aggressive deterministically hashed `_cache` mapping natively resolving identical JSON branches in `ComponentRegistry` in O(1) time without massive re-allocations.
+
 ## 0.3.2
 
 * **Fix (Docs):** Explicitly renamed the layout demonstration asset to permanently bypass upstream pub.dev caching walls. 

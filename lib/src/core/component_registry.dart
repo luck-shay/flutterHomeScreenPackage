@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'item_config.dart';
 import 'exceptions.dart';
 import 'json_parser_utils.dart';
@@ -18,6 +19,7 @@ class ComponentRegistry {
   final FallbackBuilder? fallbackBuilder;
 
   final Map<String, ComponentBuilder> _builders = {};
+  final Map<int, ItemConfig> _cache = {};
 
   ComponentRegistry({this.fallbackBuilder});
 
@@ -40,13 +42,27 @@ class ComponentRegistry {
       throw JsonValidationException('Component JSON missing "type" key.');
     }
 
+    // Try caching for highly identical JSON nodes.
+    // If the node has an ID it's explicitly identifiable.
+    final id = JsonParserUtils.safeString(json['id']);
+    int? cacheKey;
+    if (id != null) {
+      // Create a deterministic hash from the JSON string.
+      cacheKey = jsonEncode(json).hashCode;
+      if (_cache.containsKey(cacheKey)) {
+        HomeLogger.info('Cache hit for component type: $type (id: $id)');
+        return _cache[cacheKey]!;
+      }
+    }
+
+    ItemConfig result;
     if (_builders.containsKey(type)) {
-      return _builders[type]!(json);
+      result = _builders[type]!(json);
     } else if (fallbackBuilder != null) {
       HomeLogger.warn(
         'Resolving unregistered component "$type" via explicit fallback schema handler.',
       );
-      return fallbackBuilder!(type, json);
+      result = fallbackBuilder!(type, json);
     } else {
       HomeLogger.error(
         'Component parsing bound failed natively for unknown type: $type',
@@ -56,5 +72,10 @@ class ComponentRegistry {
         'No builder or fallback provided for component type: $type',
       );
     }
+
+    if (cacheKey != null) {
+      _cache[cacheKey] = result;
+    }
+    return result;
   }
 }

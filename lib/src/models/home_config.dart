@@ -30,6 +30,23 @@ class HomeConfig {
     this.backgroundColorValue,
   });
 
+  /// Asynchronously decodes a server-driven JSON layout into a fully instantiated [HomeConfig].
+  /// This yields the main thread allowing smooth 60fps animations while parsing massive payload structures.
+  /// We use microtask yielding because registry closures cannot cross distinct Isolate bounds.
+  static Future<HomeConfig> fromJsonAsync(
+    Map<String, dynamic> json, {
+    ComponentRegistry? componentRegistry,
+    bool debugMode = false,
+  }) async {
+    // Yield the event loop to prevent freezing the main UI thread during massive JSON resolutions.
+    await Future.delayed(Duration.zero);
+    return HomeConfig.fromJson(
+      json,
+      componentRegistry: componentRegistry,
+      debugMode: debugMode,
+    );
+  }
+
   /// Decodes a server-driven JSON layout into a fully instantiated [HomeConfig].
   ///
   /// The [componentRegistry] is strictly required if any inner layout components

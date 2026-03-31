@@ -415,6 +415,8 @@ class ServerDrivenSection extends StatefulWidget {
 class _ServerDrivenSectionState extends State<ServerDrivenSection> {
   HomeConfig? _config;
   bool _hasError = false;
+  bool _isLoadingMore = false;
+  late final ComponentRegistry _registry;
 
   @override
   void initState() {
@@ -429,7 +431,7 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
       ).loadString('assets/remote_layout.json');
       final payload = jsonDecode(jsonString) as Map<String, dynamic>;
 
-      final registry = ComponentRegistry(
+      _registry = ComponentRegistry(
         fallbackBuilder: (type, json) => WidgetItemConfig(
           widget: Text(
             'Unknown component: $type',
@@ -439,7 +441,7 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
       );
 
       // Register components defined in our mock JSON!
-      registry.register('remote_promo', (json) {
+      _registry.register('remote_promo', (json) {
         final title = json['title'] as String? ?? '';
         final subtitle = json['subtitle'] as String? ?? '';
         final colorValue = json['colorValue'] as int? ?? 0xFF000000;
@@ -476,7 +478,7 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
         );
       });
 
-      registry.register('remote_product', (json) {
+      _registry.register('remote_product', (json) {
         final name = json['name'] as String? ?? '';
         final price = json['price'] as String? ?? '';
         return WidgetItemConfig(
@@ -511,7 +513,7 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
       setState(() {
         _config = HomeConfig.fromJson(
           payload,
-          componentRegistry: registry,
+          componentRegistry: _registry,
           debugMode: true,
         );
       });
@@ -534,6 +536,63 @@ class _ServerDrivenSectionState extends State<ServerDrivenSection> {
     if (_config == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return ModularHomeScreen(config: _config!);
+    return ModularHomeScreen(
+      config: _config!,
+      onLoadMore: (section, url) async {
+        if (_isLoadingMore) return;
+        debugPrint('SDUI Triggered load-more for ${section.id} -> $url');
+
+        setState(() => _isLoadingMore = true);
+
+        // Simulate network latency round-trip
+        await Future.delayed(const Duration(seconds: 2));
+
+        // Construct new payload manually tracking engine config mutations
+        final updatedSections = List<HomeSectionConfig>.from(_config!.sections);
+        final sectionIndex = updatedSections.indexWhere(
+          (s) => s.id == section.id,
+        );
+
+        if (sectionIndex != -1 && section is ContentListSectionConfig) {
+          // Parse remote JSON items via the existing schema registry natively!
+          final newParsedItems = [
+            _registry.buildComponent({
+              'type': 'remote_product',
+              'name': 'Lazy Mouse',
+              'price': '\$49',
+            }),
+            _registry.buildComponent({
+              'type': 'remote_product',
+              'name': 'Lazy Monitor',
+              'price': '\$399',
+            }),
+          ];
+
+          final newItems = List<ItemConfig>.from(section.items)
+            ..addAll(newParsedItems);
+
+          updatedSections[sectionIndex] = ContentListSectionConfig(
+            id: section.id,
+            title: section.title,
+            layoutType: section.layoutType,
+            itemSpacing: section.itemSpacing,
+            horizontalHeight: section.horizontalHeight,
+            spacingBelow: section.spacingBelow,
+            hasMore: false, // End of pagination mock
+            nextPageUrl: null,
+            items: newItems,
+          );
+        }
+
+        setState(() {
+          _config = HomeConfig(
+            sections: updatedSections,
+            appBar: _config!.appBar,
+            backgroundColorValue: _config!.backgroundColorValue,
+          );
+          _isLoadingMore = false;
+        });
+      },
+    );
   }
 }

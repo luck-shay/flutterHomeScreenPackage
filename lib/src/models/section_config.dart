@@ -54,12 +54,20 @@ class ContentListSectionConfig extends HomeSectionConfig {
   /// The height of the section if scrolling horizontally.
   final double? horizontalHeight;
 
+  /// Indicates if infinite scroll boundaries exist for this list.
+  final bool hasMore;
+
+  /// Optional endpoint token consumed natively by the scroll handlers.
+  final String? nextPageUrl;
+
   const ContentListSectionConfig({
     required this.title,
     required this.items,
     this.layoutType = ListLayoutType.vertical,
     this.itemSpacing = 16.0,
     this.horizontalHeight = 200.0,
+    this.hasMore = false,
+    this.nextPageUrl,
     super.id,
     super.spacingBelow,
   });
@@ -92,6 +100,8 @@ class ContentListSectionConfig extends HomeSectionConfig {
       itemSpacing: JsonParserUtils.safeDouble(json['itemSpacing']) ?? 16.0,
       horizontalHeight:
           JsonParserUtils.safeDouble(json['horizontalHeight']) ?? 200.0,
+      hasMore: JsonParserUtils.safeBool(json['hasMore']) ?? false,
+      nextPageUrl: JsonParserUtils.safeString(json['nextPageUrl']),
       spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }
@@ -108,10 +118,18 @@ class ActionGridSectionConfig extends HomeSectionConfig {
   /// Spacing between rows and columns.
   final double spacing;
 
+  /// Indicates if infinite scroll boundaries exist natively for this grid.
+  final bool hasMore;
+
+  /// Endpoint cursor token.
+  final String? nextPageUrl;
+
   const ActionGridSectionConfig({
     required this.actions,
     this.crossAxisCount = 4,
     this.spacing = 16.0,
+    this.hasMore = false,
+    this.nextPageUrl,
     super.id,
     super.spacingBelow,
   });
@@ -136,6 +154,8 @@ class ActionGridSectionConfig extends HomeSectionConfig {
       actions: parsedActions,
       crossAxisCount: JsonParserUtils.safeInt(json['crossAxisCount']) ?? 4,
       spacing: JsonParserUtils.safeDouble(json['spacing']) ?? 16.0,
+      hasMore: JsonParserUtils.safeBool(json['hasMore']) ?? false,
+      nextPageUrl: JsonParserUtils.safeString(json['nextPageUrl']),
       spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
     );
   }

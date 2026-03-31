@@ -15,10 +15,16 @@ class ModularHomeScreen extends StatelessWidget {
   /// The optional delegate to control granular styling.
   final HomeThemeDelegate themeDelegate;
 
+  /// Triggered whenever a scroll boundary approaches the end of a paginated section.
+  /// Provides the specific section config and the JSON `nextPageUrl` endpoint.
+  final void Function(HomeSectionConfig section, String nextPageUrl)?
+  onLoadMore;
+
   const ModularHomeScreen({
     super.key,
     required this.config,
     this.themeDelegate = const HomeThemeDelegate(),
+    this.onLoadMore,
   });
 
   @override
@@ -32,28 +38,52 @@ class ModularHomeScreen extends StatelessWidget {
               child: config.appBar!,
             )
           : null,
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: themeDelegate.screenPadding,
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final sectionConfig = config.sections[index];
-                // Use the override spacing from the section config, or fallback to the theme delegate.
-                final bottomSpacing =
-                    sectionConfig.spacingBelow ?? themeDelegate.sectionSpacing;
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (scrollInfo) {
+          if (onLoadMore != null &&
+              scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 200) {
+            // Find the last section, which conventionally handles the vertical infinite scrolling.
+            if (config.sections.isNotEmpty) {
+              final lastSection = config.sections.last;
+              if (lastSection is ContentListSectionConfig &&
+                  lastSection.layoutType == ListLayoutType.vertical &&
+                  lastSection.hasMore &&
+                  lastSection.nextPageUrl != null) {
+                onLoadMore!(lastSection, lastSection.nextPageUrl!);
+              } else if (lastSection is ActionGridSectionConfig &&
+                  lastSection.hasMore &&
+                  lastSection.nextPageUrl != null) {
+                onLoadMore!(lastSection, lastSection.nextPageUrl!);
+              }
+            }
+          }
+          return false;
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: themeDelegate.screenPadding,
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final sectionConfig = config.sections[index];
+                  // Use the override spacing from the section config, or fallback to the theme delegate.
+                  final bottomSpacing =
+                      sectionConfig.spacingBelow ??
+                      themeDelegate.sectionSpacing;
 
-                return Padding(
-                  key: sectionConfig.id != null
-                      ? ValueKey('section_${sectionConfig.id}')
-                      : null,
-                  padding: EdgeInsets.only(bottom: bottomSpacing),
-                  child: _buildSection(context, sectionConfig),
-                );
-              }, childCount: config.sections.length),
+                  return Padding(
+                    key: sectionConfig.id != null
+                        ? ValueKey('section_${sectionConfig.id}')
+                        : null,
+                    padding: EdgeInsets.only(bottom: bottomSpacing),
+                    child: _buildSection(context, sectionConfig),
+                  );
+                }, childCount: config.sections.length),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -129,7 +159,7 @@ class ModularHomeScreen extends StatelessWidget {
     BuildContext context,
     ContentListSectionConfig config,
   ) {
-    return ContentListSection(config: config);
+    return ContentListSection(config: config, onLoadMore: onLoadMore);
   }
 
   Widget _buildDividerSection(

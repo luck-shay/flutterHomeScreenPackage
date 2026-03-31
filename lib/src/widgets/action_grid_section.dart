@@ -30,18 +30,21 @@ class ActionGridSection extends StatelessWidget {
         final childAspectRatio = itemWidth / itemHeight;
 
         return GridView.builder(
-          shrinkWrap:
-              true, // Needed because this lives inside a CustomScrollView
-          physics:
-              const NeverScrollableScrollPhysics(), // Disables nested scrolling
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: config.crossAxisCount,
             crossAxisSpacing: crossAxisSpacing,
             mainAxisSpacing: mainAxisSpacing,
             childAspectRatio: childAspectRatio,
           ),
-          itemCount: config.actions.length,
+          itemCount:
+              config.actions.length +
+              (config.hasMore ? config.crossAxisCount : 0),
           itemBuilder: (context, index) {
+            if (index >= config.actions.length) {
+              return const Center(child: CircularProgressIndicator());
+            }
             return config.actions[index].build(context);
           },
         );

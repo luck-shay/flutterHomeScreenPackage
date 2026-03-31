@@ -39,6 +39,8 @@
       "title": "Remote Products",
       "layoutType": "horizontal",
       "horizontalHeight": 220,
+      "hasMore": true,
+      "nextPageUrl": "/api/v2/products/page2",
       "items": [
         {
           "type": "remote_product",
