@@ -23,7 +23,7 @@ Building a home screen in Flutter usually means:
 ## 🎥 Demo
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/luck-shay/flutterHomeScreenPackage/main/assets/home_library_demo_v2.gif" alt="App Demo" width="300" />
+  <img src="https://raw.githubusercontent.com/luck-shay/flutterHomeScreenPackage/main/assets/home_library_demo_v3.gif" alt="App Demo" width="300" />
 </div>
 
 ## 🎨 Prebuilt Templates
@@ -59,7 +59,7 @@ Use `home_library` if:
 In your `pubspec.yaml`:
 ```yaml
 dependencies:
-  home_library: ^0.4.0
+  home_library: ^0.4.1
 ```
 
 ## 💻 Example Usage
@@ -239,14 +239,6 @@ ModularHomeScreen(
   ),
 );
 ```
-
-## 🔥 Roadmap
-
-We are actively working to take `home_library` to the next level:
-- 🥇 **Prebuilt layouts:** Drop-in E-commerce, Dashboard, and Social Feed screens.
-- 🥈 **JSON-driven UI:** Dynamically build layouts directly from backend JSON responses using the component registry pipeline.
-- 🥉 **Section-based architecture:** Refined direct programmatic section composition.
-- 🧠 **Theming system:** Light/dark toggle support and explicit section-level themes.
 
 ## 🤝 Contributing
 

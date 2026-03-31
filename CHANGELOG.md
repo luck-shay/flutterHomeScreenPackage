@@ -1,3 +1,7 @@
+## 0.4.1
+
+* **Polish:** Removed speculative roadmap from README.md and updated the layout demonstration asset with a new GIF.
+
 ## 0.4.0
 
 * **Feature:** Added `HomeConfig.fromJsonAsync()` to enable deep JSON parsing on background microtasks, ensuring 60fps scrolling without main-thread jank when resolving massive SDUI payloads.
