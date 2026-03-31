@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/section_config.dart';
+import '../models/sdui_section_config.dart';
 
 /// A section that renders a list of content cards either vertically or horizontally.
 class ContentListSection extends StatelessWidget {
   final ContentListSectionConfig config;
-  final void Function(HomeSectionConfig section, String nextPageUrl)?
+  final void Function(SduiSectionConfig section, String nextPageUrl)?
   onLoadMore;
 
   const ContentListSection({super.key, required this.config, this.onLoadMore});

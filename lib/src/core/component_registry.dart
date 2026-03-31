@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'item_config.dart';
+import 'sdui_debug_overlay.dart';
+import 'validation_result.dart';
 import 'exceptions.dart';
 import 'json_parser_utils.dart';
-import 'home_logger.dart';
+import 'sdui_logger.dart';
 
 /// Builder alias for mapping a raw JSON payload to a concrete [ItemConfig].
 typedef ComponentBuilder = ItemConfig Function(Map<String, dynamic> json);
@@ -31,15 +33,30 @@ class ComponentRegistry {
   /// Proactively check if a component mapping exists.
   bool hasComponent(String type) => _builders.containsKey(type);
 
-  /// Map an inner JSON object to an [ItemConfig] resolving UI structure.
-  ItemConfig buildComponent(Map<String, dynamic> json) {
-    final type = JsonParserUtils.safeString(json['type']);
+  ItemConfig buildComponent(
+    Map<String, dynamic> json, {
+    bool strictMode = false,
+    ValidationResult? validationResult,
+  }) {
+    final type = JsonParserUtils.safeString(
+      json['type'],
+      strict: strictMode,
+      fieldName: 'type',
+    );
 
     if (type == null) {
-      HomeLogger.error(
+      SduiLogger.error(
         'Component mapped to registry missing "type" key constraints.',
       );
-      throw JsonValidationException('Component JSON missing "type" key.');
+      validationResult?.addError('Component JSON missing "type" key.');
+      if (strictMode)
+        throw JsonValidationException('Component JSON missing "type" key.');
+      return WidgetItemConfig(
+        widget: const SduiDebugOverlay(
+          componentType: 'Unknown',
+          errorReason: 'Missing "type" key in JSON payload.',
+        ),
+      );
     }
 
     // Try caching for highly identical JSON nodes.
@@ -50,7 +67,7 @@ class ComponentRegistry {
       // Create a deterministic hash from the JSON string.
       cacheKey = jsonEncode(json).hashCode;
       if (_cache.containsKey(cacheKey)) {
-        HomeLogger.info('Cache hit for component type: $type (id: $id)');
+        SduiLogger.info('Cache hit for component type: $type (id: $id)');
         return _cache[cacheKey]!;
       }
     }
@@ -59,17 +76,29 @@ class ComponentRegistry {
     if (_builders.containsKey(type)) {
       result = _builders[type]!(json);
     } else if (fallbackBuilder != null) {
-      HomeLogger.warn(
+      SduiLogger.warn(
         'Resolving unregistered component "$type" via explicit fallback schema handler.',
+      );
+      validationResult?.addWarning(
+        'Resolved unregistered component "$type" via explicit fallback schema handler.',
       );
       result = fallbackBuilder!(type, json);
     } else {
-      HomeLogger.error(
+      SduiLogger.error(
         'Component parsing bound failed natively for unknown type: $type',
       );
-      throw UnknownComponentException(
-        type,
-        'No builder or fallback provided for component type: $type',
+      validationResult?.addError('Unknown component type: $type');
+      if (strictMode) {
+        throw UnknownComponentException(
+          type,
+          'No builder or fallback provided for component type: $type',
+        );
+      }
+      result = WidgetItemConfig(
+        widget: SduiDebugOverlay(
+          componentType: type,
+          errorReason: 'No registered builder found in ComponentRegistry.',
+        ),
       );
     }
 

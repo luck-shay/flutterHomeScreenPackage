@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/section_config.dart';
+import '../models/sdui_section_config.dart';
 
 /// A section that renders a list of promotional or informational banners.
 class BannerSection extends StatefulWidget {
@@ -46,7 +46,7 @@ class _BannerSectionState extends State<BannerSection> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(
                   16.0,
-                ), // Hardcoded for now. In prod rely on HomeThemeDelegate
+                ), // Hardcoded for now. In prod rely on SduiThemeDelegate
                 child: widget.config.banners[index].build(context),
               ),
             );

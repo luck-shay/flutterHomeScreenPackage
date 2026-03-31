@@ -1,598 +1,398 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:home_library/home_library.dart';
+import 'package:flutter/services.dart';
+import 'package:sdui_engine/sdui_engine.dart';
 
 void main() {
-  runApp(const ExampleApp());
+  runApp(const SwiggySduiDemoApp());
 }
 
-class ExampleApp extends StatelessWidget {
-  const ExampleApp({super.key});
+class SwiggySduiDemoApp extends StatelessWidget {
+  const SwiggySduiDemoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Swiggy SDUI Demo',
       debugShowCheckedModeBanner: false,
-      title: 'Modular Home Screen Example',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         useMaterial3: true,
       ),
-      home: const MainAppTabs(),
+      home: const SwiggyHomeScreen(),
     );
   }
 }
 
-class MainAppTabs extends StatefulWidget {
-  const MainAppTabs({super.key});
+class ConsoleActionHandler implements SduiActionHandler {
+  @override
+  void onAction(BuildContext context, SduiAction action) {
+    // In a real app, you would integration GoRouter or Bloc here.
+    if (action.type == SduiActionType.composite && action.actions != null) {
+      for (final subAct in action.actions!) {
+        onAction(context, subAct);
+      }
+      return;
+    }
+
+    final msg =
+        'Dispatched Action: ${action.type.name} -> ${action.route ?? ""} ${action.params ?? ""}';
+    debugPrint(msg);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+}
+
+class SwiggyHomeScreen extends StatefulWidget {
+  const SwiggyHomeScreen({super.key});
 
   @override
-  State<MainAppTabs> createState() => _MainAppTabsState();
+  State<SwiggyHomeScreen> createState() => _SwiggyHomeScreenState();
 }
 
-class _MainAppTabsState extends State<MainAppTabs> {
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = [
-    const EcommerceSection(),
-    const DashboardSection(),
-    const SocialFeedSection(),
-    const ServerDrivenSection(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Store'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.feed), label: 'Feed'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cloud_download),
-            label: 'Remote UI',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// -----------------------------------------------------
-// 1. E-Commerce Template Showcase
-// -----------------------------------------------------
-class EcommerceSection extends StatelessWidget {
-  const EcommerceSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return EcommerceTemplate(
-      title: 'Fashion Store',
-      greetingTitle: 'Good Morning, Jane!',
-      greetingSubtitle: 'Discover the latest trends.',
-      appBarActions: [
-        IconButton(icon: const Icon(Icons.shopping_cart), onPressed: () {}),
-      ],
-      promoBanners: [
-        _buildPromoCard('Summer Sale', 'Up to 50% Off!', Colors.orange),
-        _buildPromoCard('New Arrivals', 'Shop Now', Colors.deepPurple),
-      ],
-      categories: [
-        _buildActionItem(Icons.checkroom, 'Clothing'),
-        _buildActionItem(Icons.sports_basketball, 'Sports'),
-        _buildActionItem(Icons.watch, 'Accessories'),
-        _buildActionItem(Icons.more_horiz, 'More'),
-      ],
-      productLists: [
-        ContentListSectionConfig(
-          title: 'Trending Now',
-          layoutType: ListLayoutType.horizontal,
-          horizontalHeight: 200,
-          items: List.generate(
-            4,
-            (index) => WidgetItemConfig(
-              widget: _buildProductCard(
-                'Product ${index + 1}',
-                '\$${(index + 1) * 15}',
-              ),
-            ),
-          ),
-        ),
-        ContentListSectionConfig(
-          title: 'Just For You',
-          layoutType: ListLayoutType.horizontal,
-          horizontalHeight: 200,
-          items: List.generate(
-            4,
-            (index) => WidgetItemConfig(
-              widget: _buildProductCard(
-                'Exclusive ${index + 1}',
-                '\$${(index + 1) * 25}',
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPromoCard(String title, String subtitle, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: const TextStyle(fontSize: 16, color: Colors.white70),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductCard(String name, String price) {
-    return Container(
-      width: 140,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              color: Colors.grey.shade200,
-              child: const Center(child: Icon(Icons.image, color: Colors.grey)),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  price,
-                  style: const TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// -----------------------------------------------------
-// 2. Dashboard Template Showcase
-// -----------------------------------------------------
-class DashboardSection extends StatelessWidget {
-  const DashboardSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return DashboardTemplate(
-      title: 'Analytics',
-      greetingTitle: 'Hello, Admin!',
-      greetingSubtitle: 'System performance is optimal.',
-      statWidgets: [
-        _buildStatCard('Total Users', '14,293', Icons.people, Colors.blue),
-        _buildStatCard('Revenue', '\$42,100', Icons.attach_money, Colors.green),
-        _buildStatCard('Sessions', '8,302', Icons.trending_up, Colors.orange),
-        _buildStatCard('Issues', '3', Icons.warning, Colors.red),
-      ],
-      recentActivity: List.generate(
-        5,
-        (index) => ListTile(
-          leading: const CircleAvatar(child: Icon(Icons.receipt)),
-          title: Text('Transaction #${1000 + index}'),
-          subtitle: const Text('2 mins ago'),
-          trailing: const Icon(Icons.chevron_right),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: color),
-          const Spacer(),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          Text(
-            title,
-            style: TextStyle(fontSize: 14, color: color.withValues(alpha: 0.8)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// -----------------------------------------------------
-// 3. Social Feed Template Showcase
-// -----------------------------------------------------
-class SocialFeedSection extends StatelessWidget {
-  const SocialFeedSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SocialFeedTemplate(
-      title: 'Social Feed',
-      appBarActions: [
-        IconButton(icon: const Icon(Icons.send), onPressed: () {}),
-      ],
-      stories: [
-        _buildStory('Your Story', true),
-        _buildStory('Alex', false),
-        _buildStory('Sam', false),
-        _buildStory('Jordan', false),
-        _buildStory('Taylor', false),
-        _buildStory('Casey', false),
-      ],
-      feedPosts: [
-        _buildPost('Alex', 'Loving the new flutter package!', '2 mins ago'),
-        _buildPost(
-          'Sam',
-          'Building a dashboard took me 5 minutes.',
-          '1 hour ago',
-        ),
-        _buildPost(
-          'Jordan',
-          'Modular architectures are the future.',
-          '3 hours ago',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStory(String name, bool isUser) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
-          radius: 32,
-          backgroundColor: isUser ? Colors.grey : Colors.blue,
-          child: CircleAvatar(
-            radius: 29,
-            backgroundColor: Colors.white,
-            child: Icon(isUser ? Icons.add : Icons.person, color: Colors.grey),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(name, style: const TextStyle(fontSize: 12)),
-      ],
-    );
-  }
-
-  Widget _buildPost(String user, String content, String time) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade200),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const CircleAvatar(child: Icon(Icons.person)),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      time,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                const Icon(Icons.more_vert),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(content, style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 16),
-            Container(
-              height: 150,
-              color: Colors.grey.shade100,
-              child: const Center(
-                child: Icon(Icons.image, size: 40, color: Colors.grey),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                Icon(Icons.favorite_border),
-                Icon(Icons.comment_outlined),
-                Icon(Icons.share_outlined),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Shared helper
-Widget _buildActionItem(IconData icon, String label) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      CircleAvatar(
-        radius: 28,
-        backgroundColor: Colors.grey.shade200,
-        child: Icon(icon, color: Colors.black87),
-      ),
-      const SizedBox(height: 8),
-      Text(
-        label,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-      ),
-    ],
-  );
-}
-
-// -----------------------------------------------------
-// 4. Server-Driven UI Showcase
-// -----------------------------------------------------
-class ServerDrivenSection extends StatefulWidget {
-  const ServerDrivenSection({super.key});
-
-  @override
-  State<ServerDrivenSection> createState() => _ServerDrivenSectionState();
-}
-
-class _ServerDrivenSectionState extends State<ServerDrivenSection> {
-  HomeConfig? _config;
-  bool _hasError = false;
-  bool _isLoadingMore = false;
-  late final ComponentRegistry _registry;
+class _SwiggyHomeScreenState extends State<SwiggyHomeScreen> {
+  late Future<SduiConfig> _configFuture;
+  late final ConsoleActionHandler _actionHandler;
 
   @override
   void initState() {
     super.initState();
-    _loadRemoteConfig();
+    _actionHandler = ConsoleActionHandler();
+    _configFuture = _loadConfig();
   }
 
-  Future<void> _loadRemoteConfig() async {
-    try {
-      final jsonString = await DefaultAssetBundle.of(
-        context,
-      ).loadString('assets/remote_layout.json');
-      final payload = jsonDecode(jsonString) as Map<String, dynamic>;
+  Future<SduiConfig> _loadConfig() async {
+    // Simulate network delay for fetching payload
+    await Future.delayed(const Duration(milliseconds: 600));
 
-      _registry = ComponentRegistry(
-        fallbackBuilder: (type, json) => WidgetItemConfig(
-          widget: Text(
-            'Unknown component: $type',
-            style: const TextStyle(color: Colors.red),
-          ),
+    // Load dummy Swiggy replica JSON from assets
+    final jsonString = await rootBundle.loadString('assets/swiggy_home.json');
+    final Map<String, dynamic> jsonData = jsonDecode(jsonString);
+
+    // Provide the registry for custom inline components the server might send.
+    // Notice how we don't provide a fallback builder here so the engine automatically
+    // renders the SduiDebugOverlay for the "unknown_broken_component" in our JSON.
+    final registry = ComponentRegistry();
+
+    // Mapping: "promo_card"
+    registry.register('promo_card', (json) {
+      final action = SduiAction.fromJson(json['action']);
+      final color = json['color'] != null
+          ? Color(json['color'])
+          : Colors.orangeAccent;
+
+      return WidgetItemConfig(
+        action: action,
+        widget: Builder(
+          builder: (context) {
+            return GestureDetector(
+              onTap: action != null
+                  ? () => SduiActionHandlerProvider.of(
+                      context,
+                    )?.onAction(context, action)
+                  : null,
+              child: Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    // Background Image Placeholder
+                    Positioned.fill(
+                      child: Image.network(
+                        'https://picsum.photos/seed/${json['id'] ?? 'promo'}/400/200',
+                        fit: BoxFit.cover,
+                        color: Colors.black.withOpacity(
+                          0.3,
+                        ), // Darken for text readability
+                        colorBlendMode: BlendMode.darken,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            json['title'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              json['subtitle'] ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: color,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       );
+    });
 
-      // Register components defined in our mock JSON!
-      _registry.register('remote_promo', (json) {
-        final title = json['title'] as String? ?? '';
-        final subtitle = json['subtitle'] as String? ?? '';
-        final colorValue = json['colorValue'] as int? ?? 0xFF000000;
+    // Mapping: "category_icon"
+    registry.register('category_icon', (json) {
+      final action = SduiAction.fromJson(json['action']);
+      final color = json['color'] != null ? Color(json['color']) : Colors.grey;
 
-        return WidgetItemConfig(
-          widget: Container(
-            decoration: BoxDecoration(
-              color: Color(colorValue),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      return WidgetItemConfig(
+        action: action,
+        widget: Builder(
+          builder: (context) {
+            return GestureDetector(
+              onTap: action != null
+                  ? () => SduiActionHandlerProvider.of(
+                      context,
+                    )?.onAction(context, action)
+                  : null,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Image.network(
+                        'https://api.dicebear.com/7.x/icons/png?seed=${json['icon']}&backgroundColor=transparent',
+                        width: 36,
+                        height: 36,
+                        errorBuilder: (ctx, err, stack) =>
+                            Icon(Icons.fastfood, color: color, size: 32),
+                      ),
+                    ),
                   ),
-                ),
-                if (subtitle.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 16, color: Colors.white70),
+                    json['label'] ?? '',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                    ),
                   ),
                 ],
-              ],
-            ),
-          ),
-        );
-      });
+              ),
+            );
+          },
+        ),
+      );
+    });
 
-      _registry.register('remote_product', (json) {
-        final name = json['name'] as String? ?? '';
-        final price = json['price'] as String? ?? '';
-        return WidgetItemConfig(
-          widget: Container(
-            width: 140,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Expanded(
-                  child: Center(child: Icon(Icons.inventory_2, size: 40)),
-                ),
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(price, style: const TextStyle(color: Colors.green)),
-              ],
-            ),
-          ),
-        );
-      });
+    // Mapping: "restaurant_card"
+    registry.register('restaurant_card', (json) {
+      final action = SduiAction.fromJson(json['action']);
 
-      // Pass debugMode: true to observe the internal logger print the JSON mapping!
-      setState(() {
-        _config = HomeConfig.fromJson(
-          payload,
-          componentRegistry: _registry,
-          debugMode: true,
-        );
-      });
-    } catch (e, st) {
-      debugPrint('Error loading SDUI: $e\n$st');
-      setState(() => _hasError = true);
-    }
+      return WidgetItemConfig(
+        action: action,
+        widget: Builder(
+          builder: (context) {
+            return InkWell(
+              onTap: action != null
+                  ? () => SduiActionHandlerProvider.of(
+                      context,
+                    )?.onAction(context, action)
+                  : null,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 120,
+                    height: 130,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Image.network(
+                      'https://picsum.photos/seed/${json['id'] ?? 'res'}/200/200',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            json['name'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.star,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                json['rating']?.toString() ?? '',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Icon(
+                                Icons.timer_outlined,
+                                size: 16,
+                                color: Colors.black54,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                json['time'] ?? '',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            json['cuisines'] ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.black45,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    });
+
+    // Important: parsing in Strict Mode natively handles schema compliance!
+    // Using validationResult to grab the schema evaluation natively.
+    final validation = ValidationResult();
+
+    final config = await SduiConfig.fromJsonAsync(
+      jsonData,
+      componentRegistry: registry,
+      debugMode: true,
+      strictMode:
+          false, // Turn on true in Dev to aggressively fail on schema mismatch!
+      validationResult: validation,
+    );
+
+    debugPrint(
+      'SDUI JSON Validated. Warnings: ${validation.warnings.length}, Errors: ${validation.errors.length}',
+    );
+
+    return config;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_hasError) {
-      return const Center(
-        child: Text(
-          'Failed to load remote configuration. Check logs.',
-          style: TextStyle(color: Colors.red),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Swiggy SDUI Engine Demo',
+          style: TextStyle(fontSize: 16),
         ),
-      );
-    }
-    if (_config == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    return ModularHomeScreen(
-      config: _config!,
-      onLoadMore: (section, url) async {
-        if (_isLoadingMore) return;
-        debugPrint('SDUI Triggered load-more for ${section.id} -> $url');
-
-        setState(() => _isLoadingMore = true);
-
-        // Simulate network latency round-trip
-        await Future.delayed(const Duration(seconds: 2));
-
-        // Construct new payload manually tracking engine config mutations
-        final updatedSections = List<HomeSectionConfig>.from(_config!.sections);
-        final sectionIndex = updatedSections.indexWhere(
-          (s) => s.id == section.id,
-        );
-
-        if (sectionIndex != -1 && section is ContentListSectionConfig) {
-          // Parse remote JSON items via the existing schema registry natively!
-          final newParsedItems = [
-            _registry.buildComponent({
-              'type': 'remote_product',
-              'name': 'Lazy Mouse',
-              'price': '\$49',
-            }),
-            _registry.buildComponent({
-              'type': 'remote_product',
-              'name': 'Lazy Monitor',
-              'price': '\$399',
-            }),
-          ];
-
-          final newItems = List<ItemConfig>.from(section.items)
-            ..addAll(newParsedItems);
-
-          updatedSections[sectionIndex] = ContentListSectionConfig(
-            id: section.id,
-            title: section.title,
-            layoutType: section.layoutType,
-            itemSpacing: section.itemSpacing,
-            horizontalHeight: section.horizontalHeight,
-            spacingBelow: section.spacingBelow,
-            hasMore: false, // End of pagination mock
-            nextPageUrl: null,
-            items: newItems,
-          );
-        }
-
-        setState(() {
-          _config = HomeConfig(
-            sections: updatedSections,
-            appBar: _config!.appBar,
-            backgroundColorValue: _config!.backgroundColorValue,
-          );
-          _isLoadingMore = false;
-        });
-      },
+        backgroundColor: Colors.deepOrange,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              setState(() {
+                _configFuture = _loadConfig();
+              });
+            },
+          ),
+        ],
+      ),
+      body: FutureBuilder<SduiConfig>(
+        future: _configFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Failed to load UI: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            // Drop in the core SDUI orchestrator view!
+            return SduiScreen(
+              config: snapshot.data!,
+              actionHandler: _actionHandler, // Inject the Interaction delegate
+              themeDelegate: SduiThemeDelegate(
+                screenPadding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 24.0,
+                ),
+                cardBorderRadius: BorderRadius.circular(16),
+              ),
+            );
+          }
+          return const Center(child: Text('No Configuration found.'));
+        },
+      ),
     );
   }
 }

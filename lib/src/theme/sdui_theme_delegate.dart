@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// A delegate that provides styling and spacing parameters for the Home Screen components.
 /// If not provided, the components will fall back to the generic `Theme.of(context)` properties.
-class HomeThemeDelegate {
+class SduiThemeDelegate {
   /// General padding around the edges of the home screen content.
   final EdgeInsetsGeometry screenPadding;
 
@@ -24,7 +24,7 @@ class HomeThemeDelegate {
   /// Base background color of the cards inside sections.
   final Color? cardBackgroundColor;
 
-  const HomeThemeDelegate({
+  const SduiThemeDelegate({
     this.screenPadding = const EdgeInsets.symmetric(horizontal: 16.0),
     this.sectionSpacing = 24.0,
     this.cardBorderRadius = const BorderRadius.all(Radius.circular(16.0)),
@@ -35,7 +35,7 @@ class HomeThemeDelegate {
   });
 
   /// Factory constructor to generate a copy with modified values.
-  HomeThemeDelegate copyWith({
+  SduiThemeDelegate copyWith({
     EdgeInsetsGeometry? screenPadding,
     double? sectionSpacing,
     BorderRadius? cardBorderRadius,
@@ -44,7 +44,7 @@ class HomeThemeDelegate {
     TextStyle? sectionSubtitleTextStyle,
     Color? cardBackgroundColor,
   }) {
-    return HomeThemeDelegate(
+    return SduiThemeDelegate(
       screenPadding: screenPadding ?? this.screenPadding,
       sectionSpacing: sectionSpacing ?? this.sectionSpacing,
       cardBorderRadius: cardBorderRadius ?? this.cardBorderRadius,

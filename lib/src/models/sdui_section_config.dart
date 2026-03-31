@@ -2,9 +2,10 @@ import 'package:flutter/widgets.dart';
 import '../core/component_registry.dart';
 import '../core/item_config.dart';
 import '../core/json_parser_utils.dart';
+import '../core/validation_result.dart';
 
 /// The abstract base class that all section configurations must extend.
-abstract class HomeSectionConfig {
+abstract class SduiSectionConfig {
   /// Optional ID string used for server-driven UI diffing and component location.
   final String? id;
 
@@ -12,12 +13,12 @@ abstract class HomeSectionConfig {
   /// If not provided, it falls back to spacing defined in ThemeDelegate.
   final double? spacingBelow;
 
-  const HomeSectionConfig({this.id, this.spacingBelow});
+  const SduiSectionConfig({this.id, this.spacingBelow});
 }
 
 /// A custom section that allows developers to inject any widget into the layout programmatically.
 /// Custom sections cannot be instantiated from a generic JSON payload.
-class CustomSectionConfig extends HomeSectionConfig {
+class CustomSectionConfig extends SduiSectionConfig {
   /// Builder to render the custom widget.
   final WidgetBuilder builder;
 
@@ -38,7 +39,7 @@ enum ListLayoutType {
 }
 
 /// Configuration for a list of items (e.g. Products, recent news, etc.)
-class ContentListSectionConfig extends HomeSectionConfig {
+class ContentListSectionConfig extends SduiSectionConfig {
   /// The title of the list section.
   final String title;
 
@@ -75,6 +76,8 @@ class ContentListSectionConfig extends HomeSectionConfig {
   factory ContentListSectionConfig.fromJson(
     Map<String, dynamic> json, {
     ComponentRegistry? registry,
+    bool strictMode = false,
+    ValidationResult? validationResult,
   }) {
     if (registry == null) {
       throw ArgumentError(
@@ -82,33 +85,78 @@ class ContentListSectionConfig extends HomeSectionConfig {
       );
     }
 
-    final typeStr = JsonParserUtils.safeString(json['layoutType']);
+    final typeStr = JsonParserUtils.safeString(
+      json['layoutType'],
+      strict: strictMode,
+      fieldName: 'layoutType',
+    );
     final layoutType = typeStr == 'horizontal'
         ? ListLayoutType.horizontal
         : ListLayoutType.vertical;
 
     final rawItems = json['items'] as List<dynamic>? ?? [];
     final parsedItems = rawItems
-        .map((item) => registry.buildComponent(item as Map<String, dynamic>))
+        .map(
+          (item) => registry.buildComponent(
+            item as Map<String, dynamic>? ?? {},
+            strictMode: strictMode,
+            validationResult: validationResult,
+          ),
+        )
         .toList();
 
     return ContentListSectionConfig(
-      id: JsonParserUtils.safeString(json['id']),
-      title: JsonParserUtils.safeString(json['title']) ?? '',
+      id: JsonParserUtils.safeString(
+        json['id'],
+        strict: strictMode,
+        fieldName: 'id',
+      ),
+      title:
+          JsonParserUtils.safeString(
+            json['title'],
+            strict: strictMode,
+            fieldName: 'title',
+          ) ??
+          '',
       items: parsedItems,
       layoutType: layoutType,
-      itemSpacing: JsonParserUtils.safeDouble(json['itemSpacing']) ?? 16.0,
+      itemSpacing:
+          JsonParserUtils.safeDouble(
+            json['itemSpacing'],
+            strict: strictMode,
+            fieldName: 'itemSpacing',
+          ) ??
+          16.0,
       horizontalHeight:
-          JsonParserUtils.safeDouble(json['horizontalHeight']) ?? 200.0,
-      hasMore: JsonParserUtils.safeBool(json['hasMore']) ?? false,
-      nextPageUrl: JsonParserUtils.safeString(json['nextPageUrl']),
-      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
+          JsonParserUtils.safeDouble(
+            json['horizontalHeight'],
+            strict: strictMode,
+            fieldName: 'horizontalHeight',
+          ) ??
+          200.0,
+      hasMore:
+          JsonParserUtils.safeBool(
+            json['hasMore'],
+            strict: strictMode,
+            fieldName: 'hasMore',
+          ) ??
+          false,
+      nextPageUrl: JsonParserUtils.safeString(
+        json['nextPageUrl'],
+        strict: strictMode,
+        fieldName: 'nextPageUrl',
+      ),
+      spacingBelow: JsonParserUtils.safeDouble(
+        json['spacingBelow'],
+        strict: strictMode,
+        fieldName: 'spacingBelow',
+      ),
     );
   }
 }
 
 /// Configuration for a grid of quick actions.
-class ActionGridSectionConfig extends HomeSectionConfig {
+class ActionGridSectionConfig extends SduiSectionConfig {
   /// Number of columns in the grid.
   final int crossAxisCount;
 
@@ -137,6 +185,8 @@ class ActionGridSectionConfig extends HomeSectionConfig {
   factory ActionGridSectionConfig.fromJson(
     Map<String, dynamic> json, {
     ComponentRegistry? registry,
+    bool strictMode = false,
+    ValidationResult? validationResult,
   }) {
     if (registry == null) {
       throw ArgumentError(
@@ -146,17 +196,53 @@ class ActionGridSectionConfig extends HomeSectionConfig {
 
     final rawActions = json['actions'] as List<dynamic>? ?? [];
     final parsedActions = rawActions
-        .map((item) => registry.buildComponent(item as Map<String, dynamic>))
+        .map(
+          (item) => registry.buildComponent(
+            item as Map<String, dynamic>? ?? {},
+            strictMode: strictMode,
+            validationResult: validationResult,
+          ),
+        )
         .toList();
 
     return ActionGridSectionConfig(
-      id: JsonParserUtils.safeString(json['id']),
+      id: JsonParserUtils.safeString(
+        json['id'],
+        strict: strictMode,
+        fieldName: 'id',
+      ),
       actions: parsedActions,
-      crossAxisCount: JsonParserUtils.safeInt(json['crossAxisCount']) ?? 4,
-      spacing: JsonParserUtils.safeDouble(json['spacing']) ?? 16.0,
-      hasMore: JsonParserUtils.safeBool(json['hasMore']) ?? false,
-      nextPageUrl: JsonParserUtils.safeString(json['nextPageUrl']),
-      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
+      crossAxisCount:
+          JsonParserUtils.safeInt(
+            json['crossAxisCount'],
+            strict: strictMode,
+            fieldName: 'crossAxisCount',
+          ) ??
+          4,
+      spacing:
+          JsonParserUtils.safeDouble(
+            json['spacing'],
+            strict: strictMode,
+            fieldName: 'spacing',
+          ) ??
+          16.0,
+      hasMore:
+          JsonParserUtils.safeBool(
+            json['hasMore'],
+            strict: strictMode,
+            fieldName: 'hasMore',
+          ) ??
+          false,
+      nextPageUrl: JsonParserUtils.safeString(
+        json['nextPageUrl'],
+        strict: strictMode,
+        fieldName: 'nextPageUrl',
+      ),
+      spacingBelow: JsonParserUtils.safeDouble(
+        json['spacingBelow'],
+        strict: strictMode,
+        fieldName: 'spacingBelow',
+      ),
     );
   }
 }
@@ -171,7 +257,7 @@ enum BannerLayoutType {
 }
 
 /// Configuration for a promotional or informative banner section.
-class BannerSectionConfig extends HomeSectionConfig {
+class BannerSectionConfig extends SduiSectionConfig {
   /// The layout style of the banner.
   final BannerLayoutType layoutType;
 
@@ -192,6 +278,8 @@ class BannerSectionConfig extends HomeSectionConfig {
   factory BannerSectionConfig.fromJson(
     Map<String, dynamic> json, {
     ComponentRegistry? registry,
+    bool strictMode = false,
+    ValidationResult? validationResult,
   }) {
     if (registry == null) {
       throw ArgumentError(
@@ -199,28 +287,52 @@ class BannerSectionConfig extends HomeSectionConfig {
       );
     }
 
-    final typeStr = JsonParserUtils.safeString(json['layoutType']);
+    final typeStr = JsonParserUtils.safeString(
+      json['layoutType'],
+      strict: strictMode,
+      fieldName: 'layoutType',
+    );
     final layoutType = typeStr == 'carousel'
         ? BannerLayoutType.carousel
         : BannerLayoutType.standard;
 
     final rawBanners = json['banners'] as List<dynamic>? ?? [];
     final parsedBanners = rawBanners
-        .map((item) => registry.buildComponent(item as Map<String, dynamic>))
+        .map(
+          (item) => registry.buildComponent(
+            item as Map<String, dynamic>? ?? {},
+            strictMode: strictMode,
+            validationResult: validationResult,
+          ),
+        )
         .toList();
 
     return BannerSectionConfig(
-      id: JsonParserUtils.safeString(json['id']),
+      id: JsonParserUtils.safeString(
+        json['id'],
+        strict: strictMode,
+        fieldName: 'id',
+      ),
       banners: parsedBanners,
       layoutType: layoutType,
-      autoPlay: JsonParserUtils.safeBool(json['autoPlay']) ?? true,
-      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
+      autoPlay:
+          JsonParserUtils.safeBool(
+            json['autoPlay'],
+            strict: strictMode,
+            fieldName: 'autoPlay',
+          ) ??
+          true,
+      spacingBelow: JsonParserUtils.safeDouble(
+        json['spacingBelow'],
+        strict: strictMode,
+        fieldName: 'spacingBelow',
+      ),
     );
   }
 }
 
 /// Configuration for a visual divider between sections.
-class DividerSectionConfig extends HomeSectionConfig {
+class DividerSectionConfig extends SduiSectionConfig {
   /// The vertical space the divider occupies.
   final double height;
 
@@ -238,19 +350,45 @@ class DividerSectionConfig extends HomeSectionConfig {
     super.spacingBelow,
   });
 
-  factory DividerSectionConfig.fromJson(Map<String, dynamic> json) {
+  factory DividerSectionConfig.fromJson(
+    Map<String, dynamic> json, {
+    bool strictMode = false,
+    ValidationResult? validationResult,
+  }) {
     return DividerSectionConfig(
-      id: JsonParserUtils.safeString(json['id']),
-      height: JsonParserUtils.safeDouble(json['height']) ?? 32.0,
-      thickness: JsonParserUtils.safeDouble(json['thickness']),
-      colorValue: JsonParserUtils.safeInt(json['colorValue']),
-      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
+      id: JsonParserUtils.safeString(
+        json['id'],
+        strict: strictMode,
+        fieldName: 'id',
+      ),
+      height:
+          JsonParserUtils.safeDouble(
+            json['height'],
+            strict: strictMode,
+            fieldName: 'height',
+          ) ??
+          32.0,
+      thickness: JsonParserUtils.safeDouble(
+        json['thickness'],
+        strict: strictMode,
+        fieldName: 'thickness',
+      ),
+      colorValue: JsonParserUtils.safeInt(
+        json['colorValue'],
+        strict: strictMode,
+        fieldName: 'colorValue',
+      ),
+      spacingBelow: JsonParserUtils.safeDouble(
+        json['spacingBelow'],
+        strict: strictMode,
+        fieldName: 'spacingBelow',
+      ),
     );
   }
 }
 
 /// Configuration for the header of the home screen.
-class HeaderSectionConfig extends HomeSectionConfig {
+class HeaderSectionConfig extends SduiSectionConfig {
   /// The main greeting or title text.
   final String title;
 
@@ -268,12 +406,34 @@ class HeaderSectionConfig extends HomeSectionConfig {
     super.spacingBelow,
   });
 
-  factory HeaderSectionConfig.fromJson(Map<String, dynamic> json) {
+  factory HeaderSectionConfig.fromJson(
+    Map<String, dynamic> json, {
+    bool strictMode = false,
+    ValidationResult? validationResult,
+  }) {
     return HeaderSectionConfig(
-      id: JsonParserUtils.safeString(json['id']),
-      title: JsonParserUtils.safeString(json['title']) ?? '',
-      subtitle: JsonParserUtils.safeString(json['subtitle']),
-      spacingBelow: JsonParserUtils.safeDouble(json['spacingBelow']),
+      id: JsonParserUtils.safeString(
+        json['id'],
+        strict: strictMode,
+        fieldName: 'id',
+      ),
+      title:
+          JsonParserUtils.safeString(
+            json['title'],
+            strict: strictMode,
+            fieldName: 'title',
+          ) ??
+          '',
+      subtitle: JsonParserUtils.safeString(
+        json['subtitle'],
+        strict: strictMode,
+        fieldName: 'subtitle',
+      ),
+      spacingBelow: JsonParserUtils.safeDouble(
+        json['spacingBelow'],
+        strict: strictMode,
+        fieldName: 'spacingBelow',
+      ),
     );
   }
 }

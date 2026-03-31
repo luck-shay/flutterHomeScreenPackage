@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "backgroundColorValue": 4294638330,
+  "sections": [
+    {
+      "type": "header",
+      "id": "swiggy_header",
+      "title": "Home",
+      "subtitle": "C-12, Green Park, New Delhi",
+      "spacingBelow": 16.0
+    },
+    {
+      "type": "banner",
+      "id": "promo_banners",
+      "layoutType": "carousel",
+      "autoPlay": true,
+      "spacingBelow": 24.0,
+      "banners": [
+        {
+          "type": "promo_card",
+          "id": "promo_1",
+          "title": "50% OFF up to ₹100",
+          "subtitle": "Use code SWIGGY50",
+          "color": 4292931584,
+          "action": {
+             "type": "navigate",
+             "route": "/offers/100"
+          }
+        },
+        {
+          "type": "promo_card",
+          "id": "promo_2",
+          "title": "Free Delivery",
+          "subtitle": "On orders above ₹149",
+          "color": 4280391411
+        }
+      ]
+    },
+    {
+      "type": "action_grid",
+      "id": "categories",
+      "crossAxisCount": 4,
+      "spacing": 16.0,
+      "spacingBelow": 24.0,
+      "actions": [
+        {
+          "type": "category_icon",
+          "id": "cat_food",
+          "label": "Food delivery",
+          "icon": "fastfood",
+          "color": 4294931751,
+          "action": { "type": "navigate", "route": "/food" }
+        },
+        {
+          "type": "category_icon",
+          "id": "cat_instamart",
+          "label": "Instamart",
+          "icon": "shopping_cart",
+          "color": 4292945209,
+          "action": { "type": "navigate", "route": "/instamart" }
+        },
+        {
+          "type": "category_icon",
+          "id": "cat_dineout",
+          "label": "Dineout",
+          "icon": "restaurant",
+          "color": 4281308369,
+          "action": { "type": "navigate", "route": "/dineout" }
+        },
+        {
+          "type": "category_icon",
+          "id": "cat_genie",
+          "label": "Genie",
+          "icon": "delivery_dining",
+          "color": 4285880790,
+          "action": { "type": "navigate", "route": "/genie" }
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "id": "divider_1",
+      "height": 4,
+      "thickness": 4,
+      "colorValue": 4292927712,
+      "spacingBelow": 24.0
+    },
+    {
+      "type": "content_list",
+      "id": "restaurants",
+      "title": "Top restaurants near you",
+      "layoutType": "vertical",
+      "hasMore": false,
+      "nextPageUrl": "/api/restaurants?page=2",
+      "items": [
+        {
+          "type": "restaurant_card",
+          "id": "res_1",
+          "name": "Domino's Pizza",
+          "rating": 4.2,
+          "time": "30-35 mins",
+          "cuisines": "Pizzas, Fast Food",
+          "action": {
+            "type": "navigate",
+            "route": "/restaurant/dominos"
+          }
+        },
+        {
+          "type": "restaurant_card",
+          "id": "res_2",
+          "name": "KFC",
+          "rating": 4.0,
+          "time": "25-30 mins",
+          "cuisines": "Burger, Fast Food",
+          "action": {
+             "type": "composite",
+             "actions": [
+               { "type": "analytics_event", "params": { "event_name": "click_restaurant", "res_id": "res_2" } },
+               { "type": "navigate", "route": "/restaurant/kfc" }
+             ]
+          }
+        },
+        {
+          "type": "unknown_broken_component",
+          "id": "res_3",
+          "name": "This will trigger the SduiDebugOverlay!"
+        }
+      ]
+    }
+  ]
+}

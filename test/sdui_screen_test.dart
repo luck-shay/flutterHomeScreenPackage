@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:home_library/home_library.dart';
+import 'package:sdui_engine/sdui_engine.dart';
 
 void main() {
-  testWidgets('ModularHomeScreen renders all configuration sections', (
+  testWidgets('SduiScreen renders all configuration sections', (
     WidgetTester tester,
   ) async {
     // 1. Arrange
-    final config = HomeConfig(
+    final config = SduiConfig(
       appBar: AppBar(title: const Text('Test App Bar')),
       sections: [
         const HeaderSectionConfig(
@@ -52,9 +52,7 @@ void main() {
     );
 
     // 2. Act
-    await tester.pumpWidget(
-      MaterialApp(home: ModularHomeScreen(config: config)),
-    );
+    await tester.pumpWidget(MaterialApp(home: SduiScreen(config: config)));
 
     // Provide time for the nested layout structures (like GridView) to settle
     await tester.pumpAndSettle();

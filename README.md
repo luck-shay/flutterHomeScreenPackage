@@ -1,249 +1,151 @@
-# Modular Home Screen (`home_library`)
+# 🚀 flutter_sdui 
 
-A production-grade **Server-Driven UI (SDUI) Engine** to build dynamic, customizable, and hyper-performant Flutter home screens entirely from JSON payloads in minutes.
-
-`home_library` is a Flutter package that shifts layout configurations from static application code to dynamic architecture constraints. Define robust `Section` templates remotely, ingest them through resilient data-parsers safely against schema mismatches, and orchestrate them via a powerful `CustomScrollView` + `Sliver` structure.
-
-## 🚨 The Problem
-
-Building a home screen in Flutter usually means:
-- Writing repetitive, boilerplate UI code.
-- Hard-to-maintain, nested widget trees.
-- Poor flexibility for dynamic or remote-driven changes.
-- Fighting standard scroll behaviors.
-
-## ✅ The Solution
-
-`home_library` solves this by transforming home screens to a remote infrastructural backend:
-- **Declarative JSON Configuration:** Build complex layouts easily via typed data models fetched live avoiding Play/App Store deployments.
-- **Robust Type Mapping Constraints:** Prevent structural API mismatch faults implicitly using data primitives coercions (`JsonParserUtils`).
-- **Plug-and-play modular sections:** Reusable structural blocks automatically tracked perfectly using `ValueKey` injections avoiding layout jumping.
-- **Clean and scalable architecture:** Decoupled structural data (`SectionRegistry`) and UI constraint logic (`ComponentRegistry`).
-
-## 🎥 Demo
+A production-grade **Server-Driven UI (SDUI) Engine** built for Flutter. Construct hyper-dynamic, completely remote home screens using clean JSON payloads, strict schema validation, and declarative architectures in minutes.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/luck-shay/flutterHomeScreenPackage/main/assets/home_library_demo_v3.gif" alt="App Demo" width="300" />
+  <img src="https://raw.githubusercontent.com/luck-shay/flutterHomeScreenPackage/main/assets/sdui_demo.gif" width="280"/>
 </div>
 
-## 🎨 Prebuilt Templates
+**Stop rebuilding your app to test new layouts.** `flutter_sdui` shifts layout configurations from static application code to dynamic backend constraints. Perfect for startups, product teams, and enterprise applications that require A/B testing, remote control, and instant iteration.
 
-The package comes with 3 production-ready layout templates that you can drop into any app immediately:
+---
 
-1. **E-Commerce Storefront**
-2. **Analytics Dashboard**
-3. **Social Feed**
+## 🚨 The "Before" Problem
+
+Building dynamic layouts natively means writing repetitive boilerplate, hardcoding widget positions, and suffering through app store review cycles for a simple promo banner swap:
+
+```dart
+// The Old Way: 200 lines of hardcoded brittle layout updates requiring an App Store release
+Scaffold(
+  body: CustomScrollView(
+    slivers: [
+      SliverToBoxAdapter(child: HeaderWidget(title: "Good Morning")),
+      if (showPromo) SliverToBoxAdapter(child: PromoCarouselWidget(offers: backendOffers)),
+      SliverGrid(delegate: CategorySliverDelegate(categories: backendCategories)),
+      if (foodList.isNotEmpty) SliverList(delegate: FoodSliverDelegate(foods: backendFoods)),
+    ]
+  )
+)
+```
+
+## ✅ The "After" Solution
+
+`flutter_sdui` (internally powered by `SduiEngine`) treats structural configurations as serializable layout definitions. You just send the intent natively:
+
+```json
+{
+  "sections": [
+    { "type": "header", "title": "Good Morning" },
+    { "type": "banner", "layoutType": "carousel", "banners": [ ... ] },
+    { "type": "action_grid", "crossAxisCount": 4, "actions": [ ... ] },
+    { "type": "content_list", "title": "Top Restaurants", "items": [ ... ] }
+  ]
+}
+```
 
 ## ⚡ Key Features
 
-- **Built-in Section Drivers:**
-    - `HeaderSectionConfig`: Greeting headers with trailing widgets.
-    - `BannerSectionConfig`: Stacked or Carousel hero image promotions.
-    - `ActionGridSectionConfig`: Grid/row actions natively supporting tight configurations.
-    - `ContentListSectionConfig`: Scrollable horizontals or vertical lists of standard content cards.
-    - `DividerSectionConfig`: Semantic custom-styled dividers.
-- **Custom Section Injection:** Render literally anything at any point in the scroll view using `CustomSectionConfig`.
-- **Deep Theming:** Automatically inherits the host environment `ThemeData`, but trivially overridable via `HomeThemeDelegate`.
-- **State Management Agnostic:** Hook tap callbacks natively inside the component builders without fighting arbitrary framework limits.
+1. **🔥 Pure Interaction Model:** Built-in `SduiAction` engine that delegates taps seamlessly natively (`{ "type": "navigate", "route": "/product/123" }`) without coupling to GoRouter or Bloc.
+2. **🛡️ Strict Schema Modes:** Treat JSON like a strict API contract. `strictMode: true` crashes your dev app if types don't match, while `false` provides unbreakable bulletproof fallbacks in Production. 
+3. **🛠️ World-Class DX:** Automatic `SduiDebugOverlay` injection natively highlights missing schemas visually on-device during testing.
+4. **🧠 Caching & Optimization:** Asynchronous isolate-safe JSON parsing yielding to the main thread ensuring 60fps renders even with 10MB payloads.
 
-## 🧠 When to use this?
+---
 
-Use `home_library` if:
-- You are building dashboards or e-commerce fronts.
-- You need highly reusable and dynamic home screen layouts.
-- Your UI changes frequently based on backend responses.
-- You want a cleaner UI architecture with less nesting.
+## 🚀 Copy-Paste Quick Start (The "Swiggy" Setup)
 
-## 🚀 Getting Started
+Get a massive dynamic architecture running in 2 minutes.
 
-In your `pubspec.yaml`:
-```yaml
-dependencies:
-  home_library: ^0.4.1
-```
-
-## 💻 Example Usage
-
-Use the orchestrator widget `ModularHomeScreen` and pass it your declarative `HomeConfig`:
+### 1. Register your Native Components
+The engine manages structural section layouts (Grids, ScrollViews). You tell the engine how to render leaf-node items dynamically:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:home_library/home_library.dart';
+// 1. Initialize your custom registry
+final registry = ComponentRegistry();
 
-class StorefrontHomeScreen extends StatelessWidget {
-  const StorefrontHomeScreen({super.key});
+// 2. Map a backend object "promo_card" to your native UI
+registry.register('promo_card', (json) {
+  // Extract the declarative action
+  final action = SduiAction.fromJson(json['action']);
+  
+  return WidgetItemConfig(
+    action: action,
+    widget: Builder(
+      builder: (context) {
+        // Use SduiActionHandlerProvider to automatically dispatch actions!
+        return InkWell(
+          onTap: () => SduiActionHandlerProvider.of(context)?.onAction(context, action),
+          child: MyNativePromoCard(title: json['title']),
+        );
+      }
+    ),
+  );
+});
+```
 
+### 2. Implement an Action Handler
+Delegate analytics and navigation strictly to the host app:
+
+```dart
+class MyActionHandler implements SduiActionHandler {
   @override
-  Widget build(BuildContext context) {
-    return ModularHomeScreen(
-      // Configure global theming override for a premium feel
-      themeDelegate: HomeThemeDelegate(
-        screenPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-        sectionSpacing: 32.0,
-        cardBorderRadius: BorderRadius.circular(16.0),
-      ),
-      config: HomeConfig(
-        appBar: AppBar(
-          title: const Text('Storefront', style: TextStyle(fontWeight: FontWeight.bold)),
-          actions: [
-            IconButton(icon: const Icon(Icons.shopping_cart_outlined), onPressed: () {}),
-          ],
-        ),
-        sections: [
-          // 1. Personalized Greeting
-          HeaderSectionConfig(
-            title: 'Good Morning, Alex!',
-            subtitle: 'Ready for some exclusive deals?',
-            trailingWidget: const CircleAvatar(
-              backgroundImage: NetworkImage('https://i.pravatar.cc/100'),
-            ),
-          ),
-          
-          // 2. Promotional Carousel
-          BannerSectionConfig(
-            layoutType: BannerLayoutType.carousel,
-            autoPlay: true,
-            banners: [ 
-              _buildPromoCard('Summer Sale', 'Up to 50% Off', Colors.orangeAccent),
-              _buildPromoCard('New Arrivals', 'Shop latest trends', Colors.blueAccent),
-            ]
-          ),
-          
-          // 3. Category Grid
-          ActionGridSectionConfig(
-            crossAxisCount: 4,
-            actions: [
-              _buildCategoryAction(Icons.checkroom, 'Clothing'),
-              _buildCategoryAction(Icons.devices, 'Tech'),
-              _buildCategoryAction(Icons.sports_esports, 'Gaming'),
-              _buildCategoryAction(Icons.flight, 'Travel'),
-            ]
-          ),
-          
-          const DividerSectionConfig(height: 40, thickness: 1),
-          
-          // 4. Horizontal Scrolling Product List
-          ContentListSectionConfig(
-            title: 'Trending Now',
-            layoutType: ListLayoutType.horizontal,
-            horizontalHeight: 220,
-            items: [
-              _buildProductCard('Wireless Headphones', '\$199'),
-              _buildProductCard('Smart Watch', '\$249'),
-              _buildProductCard('Mechanical Keyboard', '\$129'),
-            ],
-          ),
-        ]
-      ),
-    );
-  }
-
-  Widget _buildPromoCard(String title, String subtitle, Color color) {
-    return Container(
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(16)),
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-          const SizedBox(height: 8),
-          Text(subtitle, style: const TextStyle(fontSize: 16, color: Colors.white70)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryAction(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(radius: 28, backgroundColor: Colors.grey.shade200, child: Icon(icon, color: Colors.black87)),
-        const SizedBox(height: 8),
-        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-      ],
-    );
-  }
-
-  Widget _buildProductCard(String name, String price) {
-    return Container(
-      width: 150,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              child: const Center(child: Icon(Icons.image, color: Colors.grey, size: 40)),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(price, style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w600)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  void onAction(BuildContext context, SduiAction action) {
+     if (action.type == SduiActionType.navigate) {
+         GoRouter.of(context).push(action.route, extra: action.params);
+     } else if (action.type == SduiActionType.analyticsEvent) {
+         FirebaseAnalytics.instance.logEvent(name: action.params?['event_name']);
+     }
   }
 }
 ```
 
-## 🌐 Server-Driven UI (JSON Configuration)
-
-`home_library` securely treats structural configurations as serializable layout definitions. This allows you to construct dynamic screens entirely via API payloads!
-
-Using the dual-registry architecture (`SectionRegistry` & `ComponentRegistry`), standard structural boundaries dynamically render pure-data `ItemConfig` mappings.
+### 3. Parse The Backend Layout
 
 ```dart
-final registry = ComponentRegistry(
-  fallbackBuilder: (type, json) => Text('Unknown format: $type')
+// Suppose your API returns a structural map with sections and nested promo_cards
+final Map<String, dynamic> remotePayload = await fetchLayout();
+
+// Internal tracking of Warnings / Errors on your schema
+final validation = ValidationResult();
+
+// Parse async to avoid frame drops on massive JSON schemas
+final config = await SduiConfig.fromJsonAsync(
+  remotePayload, 
+  componentRegistry: registry,
+  strictMode: false, // Fallback gracefully if schema violates constraints
+  validationResult: validation, 
 );
 
-registry.register('promo_card', (json) {
-  // Deserialize your concrete ItemConfig directly from backend data!
-  return MyPromoCardConfig(title: json['title']);
-});
-
-// Assuming payload is Map<String, dynamic> derived from standard jsonDecode(...)
-final config = HomeConfig.fromJson(payload, componentRegistry: registry);
-
-return ModularHomeScreen(config: config);
+print('SDUI Warnings: ${validation.warnings}');
 ```
 
-## 🛠 Advanced Customization
+### 4. Render the Engine
 
-Pass a `themeDelegate` to seamlessly change the foundational styling logic for your sections.
+Inject the parsed configuration into the high-performance `SduiScreen` orchestrator:
 
 ```dart
-ModularHomeScreen(
-  config: myConfig,
-  themeDelegate: HomeThemeDelegate(
-    screenPadding: const EdgeInsets.all(24.0),
-    sectionSpacing: 32.0,
-    cardBorderRadius: BorderRadius.circular(24.0),
+return SduiScreen(
+  config: config,
+  actionHandler: MyActionHandler(), // Hooks up user taps seamlessly!
+  themeDelegate: SduiThemeDelegate(
+    screenPadding: const EdgeInsets.all(16.0),
+    cardBorderRadius: BorderRadius.circular(16.0),
   ),
 );
 ```
 
+---
+
+## 🏗️ Supported JSON Schema Definitions
+
+Every visual structural element cleanly maps down to the Section level.
+
+- `header` -> `HeaderSectionConfig`: Greeting headers with optional trailing widgets.
+- `banner` -> `BannerSectionConfig`: Stacked or Carousel image promotions.
+- `action_grid` -> `ActionGridSectionConfig`: Dense native wrap layouts.
+- `content_list` -> `ContentListSectionConfig`: Scrollable horizontal or vertical paginated lists (`nextPageUrl`).
+- `divider` -> `DividerSectionConfig`: Visual semantic separators.
+
 ## 🤝 Contributing
 
-PRs are welcome. Have an issue or a feature request? Let us know on the GitHub repository issue tracker! Let’s make Flutter UI development faster together.
-
-## ⭐ Support
-
-If you find this useful, consider giving it a star on GitHub!
+This package is designed as infrastructure. PRs adding new Section layouts, Caching strategies, and Exposure Tracking are welcome.

@@ -1,6 +1,6 @@
 # Modular Home Screen - Comprehensive Developer Guide
 
-This document is the ultimate reference guide for the `home_library` Flutter package. It explains its exact purpose, its internal architecture, all of its capabilities, and exactly how to implement every single feature.
+This document is the ultimate reference guide for the `sdui_engine` Flutter package. It explains its exact purpose, its internal architecture, all of its capabilities, and exactly how to implement every single feature.
 
 ---
 
@@ -8,7 +8,7 @@ This document is the ultimate reference guide for the `home_library` Flutter pac
 
 Building home screens and dashboards in Flutter usually results in massive, heavily nested widget trees containing a mix of `ListViews`, `GridViews`, and `Column`s. Eventually, developers run into scrolling issues, performance bottlenecks, and nightmare-level code maintenance when trying to implement things like "sticky headers" or "horizontal scrolling rows inside vertical lists".
 
-The `home_library` package solves this. **It provides a completely declarative, configuration-driven layout engine.** Instead of building widgets, developers pass a single `HomeConfig` object containing a list of `HomeSectionConfig` data models. The engine automatically translates this configuration into a highly performant, unified `CustomScrollView` utilizing Flutter's powerful `Sliver` architecture.
+The `sdui_engine` package solves this. **It provides a completely declarative, configuration-driven layout engine.** Instead of building widgets, developers pass a single `SduiConfig` object containing a list of `SduiSectionConfig` data models. The engine automatically translates this configuration into a highly performant, unified `CustomScrollView` utilizing Flutter's powerful `Sliver` architecture.
 
 ---
 
@@ -18,13 +18,13 @@ The package relies on three core pillars: **Declarative Configuration**, **Slive
 
 ### The Configuration Pipeline
 At the root of the package is:
-- **`HomeConfig`**: The root model holding the global layout properties (like the `AppBar` and screen background color). It accepts a `List<HomeSectionConfig>`.
-- **`HomeSectionConfig`**: An abstract base class defining parameters common to all sections (like `spacingBelow`).
+- **`SduiConfig`**: The root model holding the global layout properties (like the `AppBar` and screen background color). It accepts a `List<SduiSectionConfig>`.
+- **`SduiSectionConfig`**: An abstract base class defining parameters common to all sections (like `spacingBelow`).
 
 When you pass a layout config like `BannerSectionConfig(banners: [...])`, the engine doesn't just nest a widget. It passes this data model through to the orchestrator.
 
-### The Render Orchestrator (`ModularHomeScreen`)
-`ModularHomeScreen` is the heart of the library. Internally, it is built exactly like this:
+### The Render Orchestrator (`SduiScreen`)
+`SduiScreen` is the heart of the library. Internally, it is built exactly like this:
 ```dart
 CustomScrollView(
   slivers: [
@@ -55,14 +55,14 @@ Because slivers render directly into the view port lazy-loading mechanics, this 
 To start using the library, your root widget will always be:
 
 ```dart
-ModularHomeScreen(
-  config: HomeConfig(
+SduiScreen(
+  config: SduiConfig(
      appBar: SliverAppBar(title: Text('My App')),
      sections: [
         // ... Your sections go here
      ]
   ),
-  themeDelegate: HomeThemeDelegate(
+  themeDelegate: SduiThemeDelegate(
      // Global spacing and styling overrides go here
   ),
 )
@@ -160,14 +160,14 @@ CustomSectionConfig(
 
 ## 4. Theming and Customization 
 
-By default, the package assumes the visual identity of whatever `Theme.of(context)` it is running inside. However, you can strictly override padding and stylistic constraints globally utilizing the `HomeThemeDelegate`.
+By default, the package assumes the visual identity of whatever `Theme.of(context)` it is running inside. However, you can strictly override padding and stylistic constraints globally utilizing the `SduiThemeDelegate`.
 
-When constructing `ModularHomeScreen`, pass this delegate to manipulate the system universally:
+When constructing `SduiScreen`, pass this delegate to manipulate the system universally:
 
 ```dart
-ModularHomeScreen(
+SduiScreen(
   config: myConfig,
-  themeDelegate: HomeThemeDelegate(
+  themeDelegate: SduiThemeDelegate(
     screenPadding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // Outer edges of the screen
     sectionSpacing: 32.0, // Default distance between EVERY section
     cardRadius: 16.0, // Rounds corners of built-in components

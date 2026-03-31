@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-/// Internal diagnostic logger for the home_library rendering engine.
-class HomeLogger {
+/// Internal diagnostic logger for the sdui_engine rendering engine.
+class SduiLogger {
   /// Toggle to enable or disable framework level logging.
   static bool enableLogging = false;
 

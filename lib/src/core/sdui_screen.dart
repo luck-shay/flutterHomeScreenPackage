@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
-import '../models/home_config.dart';
-import '../models/section_config.dart';
-import '../theme/home_theme_delegate.dart';
+import '../models/sdui_config.dart';
+import '../models/sdui_section_config.dart';
+import '../theme/sdui_theme_delegate.dart';
 import '../widgets/action_grid_section.dart';
 import '../widgets/banner_section.dart';
 import '../widgets/content_list_section.dart';
+import 'sdui_action_handler.dart';
 
 /// The central entry point widget for the Modular Home Screen package.
-/// This widget expects a [HomeConfig] to define the layout structure.
-class ModularHomeScreen extends StatelessWidget {
+/// This widget expects a [SduiConfig] to define the layout structure.
+class SduiScreen extends StatelessWidget {
   /// The structural layout configuration.
-  final HomeConfig config;
+  final SduiConfig config;
 
   /// The optional delegate to control granular styling.
-  final HomeThemeDelegate themeDelegate;
+  final SduiThemeDelegate themeDelegate;
+
+  /// The optional action handler delegate for interactive schemas.
+  final SduiActionHandler? actionHandler;
 
   /// Triggered whenever a scroll boundary approaches the end of a paginated section.
   /// Provides the specific section config and the JSON `nextPageUrl` endpoint.
-  final void Function(HomeSectionConfig section, String nextPageUrl)?
+  final void Function(SduiSectionConfig section, String nextPageUrl)?
   onLoadMore;
 
-  const ModularHomeScreen({
+  const SduiScreen({
     super.key,
     required this.config,
-    this.themeDelegate = const HomeThemeDelegate(),
+    this.themeDelegate = const SduiThemeDelegate(),
+    this.actionHandler,
     this.onLoadMore,
   });
 
@@ -60,36 +65,44 @@ class ModularHomeScreen extends StatelessWidget {
           }
           return false;
         },
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: themeDelegate.screenPadding,
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final sectionConfig = config.sections[index];
-                  // Use the override spacing from the section config, or fallback to the theme delegate.
-                  final bottomSpacing =
-                      sectionConfig.spacingBelow ??
-                      themeDelegate.sectionSpacing;
-
-                  return Padding(
-                    key: sectionConfig.id != null
-                        ? ValueKey('section_${sectionConfig.id}')
-                        : null,
-                    padding: EdgeInsets.only(bottom: bottomSpacing),
-                    child: _buildSection(context, sectionConfig),
-                  );
-                }, childCount: config.sections.length),
-              ),
-            ),
-          ],
-        ),
+        child: actionHandler != null
+            ? SduiActionHandlerProvider(
+                handler: actionHandler!,
+                child: _buildScrollView(),
+              )
+            : _buildScrollView(),
       ),
     );
   }
 
-  /// Parses the base [HomeSectionConfig] and routes it to the correct widget renderer.
-  Widget _buildSection(BuildContext context, HomeSectionConfig sectionConfig) {
+  Widget _buildScrollView() {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: themeDelegate.screenPadding,
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final sectionConfig = config.sections[index];
+              // Use the override spacing from the section config, or fallback to the theme delegate.
+              final bottomSpacing =
+                  sectionConfig.spacingBelow ?? themeDelegate.sectionSpacing;
+
+              return Padding(
+                key: sectionConfig.id != null
+                    ? ValueKey('section_${sectionConfig.id}')
+                    : null,
+                padding: EdgeInsets.only(bottom: bottomSpacing),
+                child: _buildSection(context, sectionConfig),
+              );
+            }, childCount: config.sections.length),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Parses the base [SduiSectionConfig] and routes it to the correct widget renderer.
+  Widget _buildSection(BuildContext context, SduiSectionConfig sectionConfig) {
     if (sectionConfig is HeaderSectionConfig) {
       return _buildHeaderSection(context, sectionConfig);
     } else if (sectionConfig is BannerSectionConfig) {

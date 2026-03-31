@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:home_library/home_library.dart';
-import 'package:home_library/src/core/exceptions.dart';
+import 'package:sdui_engine/sdui_engine.dart';
+import 'package:sdui_engine/src/core/exceptions.dart';
 
 class StubStringConfig extends ItemConfig {
   final String text;
@@ -16,7 +16,7 @@ class StubStringConfig extends ItemConfig {
 }
 
 void main() {
-  group('HomeConfig JSON Parsing Tests', () {
+  group('SduiConfig JSON Parsing Tests', () {
     late ComponentRegistry registry;
 
     setUp(() {
@@ -55,7 +55,7 @@ void main() {
         ],
       };
 
-      final parsed = HomeConfig.fromJson(
+      final parsed = SduiConfig.fromJson(
         jsonPayload,
         componentRegistry: registry,
       );
@@ -90,7 +90,7 @@ void main() {
       };
 
       expect(
-        () => HomeConfig.fromJson(jsonPayload, componentRegistry: registry),
+        () => SduiConfig.fromJson(jsonPayload, componentRegistry: registry),
         throwsA(isA<JsonValidationException>()),
       );
     });
@@ -104,7 +104,11 @@ void main() {
       };
 
       expect(
-        () => HomeConfig.fromJson(jsonPayload, componentRegistry: registry),
+        () => SduiConfig.fromJson(
+          jsonPayload,
+          componentRegistry: registry,
+          strictMode: true,
+        ),
         throwsA(isA<UnknownSectionException>()),
       );
     });
@@ -125,8 +129,11 @@ void main() {
       };
 
       expect(
-        () =>
-            HomeConfig.fromJson(jsonPayload, componentRegistry: strictRegistry),
+        () => SduiConfig.fromJson(
+          jsonPayload,
+          componentRegistry: strictRegistry,
+          strictMode: true,
+        ),
         throwsA(isA<UnknownComponentException>()),
       );
     });
@@ -140,7 +147,7 @@ void main() {
         ],
       };
 
-      final parsed = HomeConfig.fromJson(
+      final parsed = SduiConfig.fromJson(
         jsonPayload,
         componentRegistry: registry,
       );
@@ -157,7 +164,7 @@ void main() {
       () async {
         final jsonPayload = {'version': 1, 'sections': []};
 
-        final parsed = await HomeConfig.fromJsonAsync(
+        final parsed = await SduiConfig.fromJsonAsync(
           jsonPayload,
           componentRegistry: registry,
         );
