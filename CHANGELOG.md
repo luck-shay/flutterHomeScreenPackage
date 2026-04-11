@@ -1,3 +1,7 @@
+## 0.6.1
+
+* **Fix (Docs):** Appended cache-busting query parameter (`?v=0.6.1`) to the `README.md` image tag to forcefully bypass GitHub CDN caching, allowing the updated Swiggy screenshot to securely propagate on pub.dev.
+
 ## 0.6.0
 
 * **Extensibility Upgrade**: Added `customSectionBuilders` to `SduiConfig` and `SectionRegistry` so developers can inject massive, fully custom root-level Sections directly from the engine parser, dropping the rigidity of default sections.

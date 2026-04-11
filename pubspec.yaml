@@ -1,6 +1,6 @@
 name: sdui_engine
 description: "A production-grade Server-Driven UI (SDUI) framework for Flutter. Build hyper-dynamic, completely remote home screens using clean JSON payloads and declarative architectures."
-version: 0.6.0
+version: 0.6.1
 homepage: "https://github.com/luck-shay/flutterHomeScreenPackage"
 repository: "https://github.com/luck-shay/flutterHomeScreenPackage"
 issue_tracker: "https://github.com/luck-shay/flutterHomeScreenPackage/issues"
