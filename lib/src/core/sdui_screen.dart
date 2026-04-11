@@ -103,22 +103,30 @@ class SduiScreen extends StatelessWidget {
 
   /// Parses the base [SduiSectionConfig] and routes it to the correct widget renderer.
   Widget _buildSection(BuildContext context, SduiSectionConfig sectionConfig) {
-    if (sectionConfig is HeaderSectionConfig) {
-      return _buildHeaderSection(context, sectionConfig);
-    } else if (sectionConfig is BannerSectionConfig) {
-      return _buildBannerSection(context, sectionConfig);
-    } else if (sectionConfig is ActionGridSectionConfig) {
-      return _buildActionGridSection(context, sectionConfig);
-    } else if (sectionConfig is ContentListSectionConfig) {
-      return _buildContentListSection(context, sectionConfig);
-    } else if (sectionConfig is DividerSectionConfig) {
-      return _buildDividerSection(context, sectionConfig);
-    } else if (sectionConfig is CustomSectionConfig) {
-      return sectionConfig.builder(context);
-    }
+    try {
+      if (sectionConfig is HeaderSectionConfig) {
+        return _buildHeaderSection(context, sectionConfig);
+      } else if (sectionConfig is BannerSectionConfig) {
+        return _buildBannerSection(context, sectionConfig);
+      } else if (sectionConfig is ActionGridSectionConfig) {
+        return _buildActionGridSection(context, sectionConfig);
+      } else if (sectionConfig is ContentListSectionConfig) {
+        return _buildContentListSection(context, sectionConfig);
+      } else if (sectionConfig is DividerSectionConfig) {
+        return _buildDividerSection(context, sectionConfig);
+      } else if (sectionConfig is CustomSectionConfig) {
+        return sectionConfig.builder(context);
+      }
 
-    // Fallback for an unknown section type.
-    return const SizedBox.shrink();
+      // Fallback for an unknown section type.
+      return const SizedBox.shrink();
+    } catch (e, _) {
+      debugPrint('SduiScreen: Error building section ${sectionConfig.id}: $e');
+      if (config.errorWidgetBuilder != null) {
+        return config.errorWidgetBuilder!(context, e);
+      }
+      return const SizedBox.shrink();
+    }
   }
 
   Widget _buildHeaderSection(BuildContext context, HeaderSectionConfig config) {

@@ -26,7 +26,7 @@ class ActionGridSection extends StatelessWidget {
             (constraints.maxWidth -
                 (crossAxisSpacing * (config.crossAxisCount - 1))) /
             config.crossAxisCount;
-        final itemHeight = itemWidth; // Default to square if not specified
+        final itemHeight = itemWidth * 1.25; // Default to taller items to accommodate text
         final childAspectRatio = itemWidth / itemHeight;
 
         return GridView.builder(

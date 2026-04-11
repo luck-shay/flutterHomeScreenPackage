@@ -21,6 +21,9 @@ class SduiConfig {
   /// Background color value of the home screen.
   final int? backgroundColorValue;
 
+  /// Global fallback for when a component or section fails to render.
+  final Widget Function(BuildContext context, Object error)? errorWidgetBuilder;
+
   /// Helper getter for rendering the translated color.
   Color? get backgroundColor =>
       backgroundColorValue != null ? Color(backgroundColorValue!) : null;
@@ -29,6 +32,7 @@ class SduiConfig {
     required this.sections,
     this.appBar,
     this.backgroundColorValue,
+    this.errorWidgetBuilder,
   });
 
   /// Asynchronously decodes a server-driven JSON layout into a fully instantiated [SduiConfig].
@@ -37,6 +41,8 @@ class SduiConfig {
   static Future<SduiConfig> fromJsonAsync(
     Map<String, dynamic> json, {
     ComponentRegistry? componentRegistry,
+    Map<String, SectionBuilder>? customSectionBuilders,
+    Widget Function(BuildContext context, Object error)? errorWidgetBuilder,
     bool debugMode = false,
     bool strictMode = false,
     ValidationResult? validationResult,
@@ -46,6 +52,8 @@ class SduiConfig {
     return SduiConfig.fromJson(
       json,
       componentRegistry: componentRegistry,
+      customSectionBuilders: customSectionBuilders,
+      errorWidgetBuilder: errorWidgetBuilder,
       debugMode: debugMode,
       strictMode: strictMode,
       validationResult: validationResult,
@@ -59,6 +67,8 @@ class SduiConfig {
   factory SduiConfig.fromJson(
     Map<String, dynamic> json, {
     ComponentRegistry? componentRegistry,
+    Map<String, SectionBuilder>? customSectionBuilders,
+    Widget Function(BuildContext context, Object error)? errorWidgetBuilder,
     bool debugMode = false,
     bool strictMode = false,
     ValidationResult? validationResult,
@@ -91,6 +101,7 @@ class SduiConfig {
       final section = SectionRegistry.buildSection(
         sectionMap,
         componentRegistry,
+        customSectionBuilders: customSectionBuilders,
         strictMode: strictMode,
         validationResult: validationResult,
       );
@@ -107,6 +118,7 @@ class SduiConfig {
       ),
       appBar:
           null, // AppBar is untyped flutter widget, omitted from typical pure JSON representations.
+      errorWidgetBuilder: errorWidgetBuilder,
     );
   }
 }

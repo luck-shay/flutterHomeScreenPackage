@@ -1,12 +1,25 @@
 {
   "version": 1,
-  "backgroundColorValue": 4294638330,
+  "backgroundColorValue": 4294967295,
   "sections": [
     {
-      "type": "header",
+      "type": "swiggy_header",
       "id": "swiggy_header",
       "title": "Home",
       "subtitle": "C-12, Green Park, New Delhi",
+      "spacingBelow": 8.0
+    },
+    {
+      "type": "content_list",
+      "id": "global_search",
+      "title": "",
+      "layoutType": "vertical",
+      "items": [
+        {
+          "type": "search_bar",
+          "id": "search_input"
+        }
+      ],
       "spacingBelow": 16.0
     },
     {
@@ -19,7 +32,7 @@
         {
           "type": "promo_card",
           "id": "promo_1",
-          "title": "50% OFF up to ₹100",
+          "title": "50% OFF\nUPTO ₹100",
           "subtitle": "Use code SWIGGY50",
           "color": 4292931584,
           "action": {
@@ -30,7 +43,7 @@
         {
           "type": "promo_card",
           "id": "promo_2",
-          "title": "Free Delivery",
+          "title": "FREE\nDELIVERY",
           "subtitle": "On orders above ₹149",
           "color": 4280391411
         }
@@ -41,7 +54,7 @@
       "id": "categories",
       "crossAxisCount": 4,
       "spacing": 16.0,
-      "spacingBelow": 24.0,
+      "spacingBelow": 28.0,
       "actions": [
         {
           "type": "category_icon",
@@ -80,9 +93,9 @@
     {
       "type": "divider",
       "id": "divider_1",
-      "height": 4,
-      "thickness": 4,
-      "colorValue": 4292927712,
+      "height": 8,
+      "thickness": 8,
+      "colorValue": 4293914613,
       "spacingBelow": 24.0
     },
     {
@@ -99,7 +112,7 @@
           "name": "Domino's Pizza",
           "rating": 4.2,
           "time": "30-35 mins",
-          "cuisines": "Pizzas, Fast Food",
+          "cuisines": "Pizzas, Italian, Pastas",
           "action": {
             "type": "navigate",
             "route": "/restaurant/dominos"
@@ -111,19 +124,25 @@
           "name": "KFC",
           "rating": 4.0,
           "time": "25-30 mins",
-          "cuisines": "Burger, Fast Food",
+          "cuisines": "Burger, Fast Food, Roles",
           "action": {
              "type": "composite",
              "actions": [
-               { "type": "analytics_event", "params": { "event_name": "click_restaurant", "res_id": "res_2" } },
                { "type": "navigate", "route": "/restaurant/kfc" }
              ]
           }
         },
-        {
-          "type": "unknown_broken_component",
-          "id": "res_3",
-          "name": "This will trigger the SduiDebugOverlay!"
+         {
+          "type": "restaurant_card",
+          "id": "res_4",
+          "name": "McDonald's",
+          "rating": 4.4,
+          "time": "15-20 mins",
+          "cuisines": "Burgers, Beverages, Cafe",
+          "action": {
+            "type": "navigate",
+            "route": "/restaurant/mcdonalds"
+          }
         }
       ]
     }

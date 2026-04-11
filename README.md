@@ -3,7 +3,7 @@
 A production-grade **Server-Driven UI (SDUI) Engine** built for Flutter. Construct hyper-dynamic, completely remote home screens using clean JSON payloads, strict schema validation, and declarative architectures in minutes.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/luck-shay/flutterHomeScreenPackage/main/assets/sdui_demo.gif" width="280"/>
+  <img src="https://raw.githubusercontent.com/luck-shay/flutterHomeScreenPackage/main/assets/sdui_demo.png" width="280"/>
 </div>
 
 **Stop rebuilding your app to test new layouts.** `flutter_sdui` shifts layout configurations from static application code to dynamic backend constraints. Perfect for startups, product teams, and enterprise applications that require A/B testing, remote control, and instant iteration.

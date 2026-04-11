@@ -49,8 +49,9 @@ class ComponentRegistry {
         'Component mapped to registry missing "type" key constraints.',
       );
       validationResult?.addError('Component JSON missing "type" key.');
-      if (strictMode)
+      if (strictMode) {
         throw JsonValidationException('Component JSON missing "type" key.');
+      }
       return WidgetItemConfig(
         widget: const SduiDebugOverlay(
           componentType: 'Unknown',

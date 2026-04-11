@@ -59,6 +59,7 @@ class SectionRegistry {
   static SduiSectionConfig buildSection(
     Map<String, dynamic> json,
     ComponentRegistry? registry, {
+    Map<String, SectionBuilder>? customSectionBuilders,
     bool strictMode = false,
     ValidationResult? validationResult,
   }) {
@@ -73,11 +74,17 @@ class SectionRegistry {
 
     if (type == 'custom') {
       SduiLogger.warn(
-        'Encountered custom layout section directly in JSON which is unsupported implicitly.',
+        'Encountered "custom" literal type which is deprecated. Use explicit custom types mapped via customSectionBuilders.',
       );
-      throw UnsupportedError(
-        'CustomSectionConfig cannot be deserialized strictly from JSON via the standard parser. '
-        'Consider utilizing custom ComponentRegistries for standard data mappings.',
+    }
+
+    if (customSectionBuilders != null && customSectionBuilders.containsKey(type)) {
+      SduiLogger.info('Parsing custom application section layout > $type');
+      return customSectionBuilders[type]!(
+        json,
+        registry,
+        strictMode: strictMode,
+        validationResult: validationResult,
       );
     }
 

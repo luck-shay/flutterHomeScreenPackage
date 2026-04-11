@@ -1,3 +1,10 @@
+## 0.6.0
+
+* **Extensibility Upgrade**: Added `customSectionBuilders` to `SduiConfig` and `SectionRegistry` so developers can inject massive, fully custom root-level Sections directly from the engine parser, dropping the rigidity of default sections.
+* **Resilience Layer**: Formally introduced `errorWidgetBuilder` mapped sequentially throughout `SduiScreen`. Unpredictable schemas and component widget crashes are gracefully swept into explicit error widgets instead of bricking the engine stream. 
+* **UI Purity**: Reverted experimental app-specific `HeaderSection` alterations back to neutral framework-level styles to maintain an unopinionated core while the example application showcases proper Extensibility overrides.
+* **Demonstration Polish**: Reflected precise, crisp new visual screenshots (`sdui_demo.png`) on `pub.dev`. Resolved remaining `opacity` deprecation flags.
+
 ## 0.5.0
 
 * **Major Release: Complete Architecture Overhaul**
